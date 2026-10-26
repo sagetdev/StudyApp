@@ -5,6 +5,7 @@ import { Button, C, Card, Heading, Page, Pill } from '@/components/study-ui';
 import { useAuth } from '@/lib/auth-context';
 
 const shortcuts = [
+  { title: 'Mes cours', subtitle: 'Retrouver les packs enregistrés', route: '/library', icon: '▤', tone: C.primarySoft },
   { title: 'Mes notes', subtitle: 'Capturer les notions importantes', route: '/notes', icon: '✎', tone: C.primarySoft },
   { title: 'Ma progression', subtitle: 'Suivre tes sessions et tes scores', route: '/progress', icon: '↗', tone: C.mint },
   { title: 'Classement', subtitle: 'Découvrir les défis à venir', route: '/ranking', icon: '♛', tone: C.amber },
@@ -35,7 +36,7 @@ export default function ProfileScreen() {
     </Pressable>)}
     <Card>
       <Text style={{ color: C.ink, fontSize: 14, fontWeight: '700' }}>À propos de la session</Text>
-      <Text style={{ color: C.muted, fontSize: 12, lineHeight: 18 }}>La connexion reste active tant que l'app est ouverte. Une reconnexion sera demandée après un redémarrage complet. Les statistiques et l'historique seront synchronisés lorsque les routes backend seront ajoutées.</Text>
+      <Text style={{ color: C.muted, fontSize: 12, lineHeight: 18 }}>La session de connexion et tes cours sont conservés localement sur cet appareil. Les notes sont également enregistrées ici. Les données ne sont pas encore synchronisées entre plusieurs appareils.</Text>
     </Card>
     <Button title="Se déconnecter" variant="secondary" onPress={logout} loading={busy} />
   </Page>;
