@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Switch, Text, View } from 'react-native';
+import { router } from 'expo-router';
 import { Button, C, Card, Heading, Page, Pill } from '@/components/study-ui';
 import { useAuth } from '@/lib/auth-context';
-import { getPreferences, savePreferences } from '@/lib/local-storage';
-import { router } from 'expo-router';
 
 function Preference({ title, subtitle, value, onChange }: { title: string; subtitle: string; value: boolean; onChange: (value: boolean) => void }) {
   return <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
@@ -17,21 +16,6 @@ export default function SettingsScreen() {
   const [reminders, setReminders] = useState(false);
   const [haptics, setHaptics] = useState(true);
   const [busy, setBusy] = useState(false);
-
-  useEffect(() => {
-    void getPreferences({ reminders: false, haptics: true }).then((prefs) => {
-      setReminders(prefs.reminders);
-      setHaptics(prefs.haptics);
-    });
-  }, []);
-
-  const updatePreference = (key: 'reminders' | 'haptics', value: boolean) => {
-    const next = { reminders: key === 'reminders' ? value : reminders, haptics: key === 'haptics' ? value : haptics };
-    if (key === 'reminders') setReminders(value);
-    else setHaptics(value);
-    void savePreferences(next);
-  };
-
   const logout = async () => {
     setBusy(true);
     try { await signOut(); router.replace('/login'); }
@@ -39,17 +23,17 @@ export default function SettingsScreen() {
   };
 
   return <Page>
-    <Heading eyebrow="Personnalisation" title="Paramètres" subtitle="Ajuste et conserve tes préférences sur cet appareil." />
+    <Heading eyebrow="Personnalisation" title="Paramètres" subtitle="Configure ton expérience StudyApp." />
     <Card>
-      <Text style={{ color: C.primary, fontSize: 11, fontWeight: '800', letterSpacing: 1 }}>PRÉFÉRENCES</Text>
-      <Preference title="Rappels d'étude" subtitle="Enregistre ton choix. Les notifications automatiques ne sont pas encore planifiées." value={reminders} onChange={(value) => updatePreference('reminders', value)} />
+      <Text style={{ color: C.primary, fontSize: 11, fontWeight: '800', letterSpacing: 1 }}>PRÉFÉRENCES DE CETTE SESSION</Text>
+      <Preference title="Rappels d'étude" subtitle="Les notifications automatiques ne sont pas encore disponibles." value={reminders} onChange={setReminders} />
       <View style={{ height: 1, backgroundColor: C.line }} />
-      <Preference title="Retour haptique" subtitle="Préférence mémorisée; les vibrations seront activées dans une prochaine version." value={haptics} onChange={(value) => updatePreference('haptics', value)} />
+      <Preference title="Retour haptique" subtitle="La prise en charge des vibrations sera ajoutée ultérieurement." value={haptics} onChange={setHaptics} />
     </Card>
     <Card>
-      <Text style={{ color: C.ink, fontSize: 15, fontWeight: '800' }}>Confidentialité et compte</Text>
-      <Text style={{ color: C.muted, fontSize: 13, lineHeight: 20 }}>Tes cours, notes et préférences sont enregistrés localement sur cet appareil. Ils ne sont pas encore synchronisés avec un compte en ligne.</Text>
-      <Pill tone="green">SESSION ACTIVE</Pill>
+      <Text style={{ color: C.ink, fontSize: 15, fontWeight: '800' }}>Compte et données</Text>
+      <Text style={{ color: C.muted, fontSize: 13, lineHeight: 20 }}>Tes cours et tes notes sont sauvegardés dans la base de données, associés à ton compte. Ils sont disponibles après reconnexion sur un autre appareil.</Text>
+      <Pill tone="green">SAUVEGARDE EN LIGNE</Pill>
       <Button title="Ouvrir mes cours" variant="secondary" onPress={() => router.push('/library')} />
       <Button title="Gérer mes notes" variant="secondary" onPress={() => router.push('/notes')} />
     </Card>
