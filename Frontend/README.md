@@ -18,7 +18,8 @@ Run the backend separately from `Backend` on port `4000`.
 The app uses `EXPO_PUBLIC_API_URL` and expects the base URL to end in `/api`.
 
 - Android emulator: `http://10.0.2.2:4000/api`
-- iOS simulator or web on the same computer: `http://localhost:4000/api`
+- iOS simulator: `http://localhost:4000/api`
+- Web: `http://localhost:4000/api` (the backend must also enable CORS for the web origin)
 - Physical Android phone: use your computer's LAN IP, for example `http://192.168.1.25:4000/api`
 - Deployed backend: use its HTTPS base URL ending in `/api`
 
