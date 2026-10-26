@@ -36,7 +36,7 @@ export default function ProfileScreen() {
     </Pressable>)}
     <Card>
       <Text style={{ color: C.ink, fontSize: 14, fontWeight: '700' }}>À propos de la session</Text>
-      <Text style={{ color: C.muted, fontSize: 12, lineHeight: 18 }}>La session de connexion et tes cours sont conservés localement sur cet appareil. Les notes sont également enregistrées ici. Les données ne sont pas encore synchronisées entre plusieurs appareils.</Text>
+      <Text style={{ color: C.muted, fontSize: 12, lineHeight: 18 }}>Tes cours et tes notes sont sauvegardés dans la base de données et associés à ton compte. Reconnecte-toi pour les retrouver sur un autre appareil.</Text>
     </Card>
     <Button title="Se déconnecter" variant="secondary" onPress={logout} loading={busy} />
   </Page>;
