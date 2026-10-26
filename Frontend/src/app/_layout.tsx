@@ -17,11 +17,17 @@ export default function RootLayout() {
         <Stack.Screen name="register" />
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="study-pack" />
+        <Stack.Screen name="revision" />
         <Stack.Screen name="flashcards" />
         <Stack.Screen name="quiz" />
         <Stack.Screen name="glossary" />
         <Stack.Screen name="recall" />
         <Stack.Screen name="exam-practice" />
+        <Stack.Screen name="tutor" />
+        <Stack.Screen name="progress" />
+        <Stack.Screen name="ranking" />
+        <Stack.Screen name="notes" />
+        <Stack.Screen name="settings" />
       </Stack>
     </AuthProvider>
   );
