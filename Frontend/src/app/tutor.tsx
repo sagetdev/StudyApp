@@ -2,10 +2,9 @@ import React, { useState } from 'react';
 import { router } from 'expo-router';
 import { Text, View } from 'react-native';
 import { Button, C, Card, Heading, Page, Pill } from '@/components/study-ui';
-import { generateStudyPack } from '@/lib/api';
+import { generateStudyPack, createStudyPack } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
 import { getCurrentStudyPack, setCurrentStudyPack } from '@/lib/study-pack-store';
-import { savePack } from '@/lib/local-storage';
 
 export default function TutorScreen() {
   const pack = getCurrentStudyPack();
@@ -18,7 +17,7 @@ export default function TutorScreen() {
     setError(''); setBusyPrompt(prompt);
     try {
       const nextPack = await generateStudyPack(prompt, session.token);
-      await savePack(nextPack);
+      await createStudyPack(nextPack, prompt, session.token);
       await setCurrentStudyPack(nextPack);
       router.push('/study-pack');
     } catch (e) { setError(e instanceof Error ? e.message : 'Impossible de générer une réponse.'); }
