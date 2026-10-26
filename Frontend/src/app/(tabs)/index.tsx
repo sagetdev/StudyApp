@@ -5,6 +5,7 @@ import { Button, C, Card, Field, Heading, Page, Pill, SectionTitle, uiStyles } f
 import { useAuth } from '@/lib/auth-context';
 import { generateStudyPack } from '@/lib/api';
 import { setCurrentStudyPack } from '@/lib/study-pack-store';
+import { savePack } from '@/lib/local-storage';
 
 const suggestions = [
   { icon: '⌁', title: 'Sciences', prompt: 'Explique les bases de la biologie cellulaire avec des exemples.' },
@@ -24,6 +25,7 @@ export default function HomeScreen() {
     setError(''); setBusy(true);
     try {
       const pack = await generateStudyPack(text.trim(), session.token);
+      await savePack(pack);
       await setCurrentStudyPack(pack);
       router.push('/study-pack');
     } catch (e) { setError(e instanceof Error ? e.message : 'La génération a échoué. Réessaie.'); }
