@@ -1,0 +1,11 @@
+Core Logic
+    - Application ou l'on peut téléverser un document de cours (upload ou prise de photo)
+      et cela envoie cette image à une intelligence artificielle avec un prompt personalisé qui va
+      renvoyer du json structuré pour créer un quiz et des flashcards de révision pour 
+      que l 'tilisateur puisse réviser sans avoir à tout faire par lui même.
+Technologies
+    - Backend (Node.js. Express)
+    - Frontend (React Native, NativeWind)
+    - Database (Neon Posgresl, Prisma ORM)
+UI/UX
+    - Figma design
