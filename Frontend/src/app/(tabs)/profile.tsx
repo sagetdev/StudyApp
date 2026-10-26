@@ -22,7 +22,7 @@ export default function ProfileScreen() {
     <Card>
       <View style={{ gap: 4 }}>
         <Text style={{ color: C.ink, fontSize: 14, fontWeight: '700' }}>Sécurité du compte</Text>
-        <Text style={{ color: C.muted, fontSize: 12, lineHeight: 18 }}>Ta session est conservée sur cet appareil. Le serveur gère les connexions par jeton JWT.</Text>
+        <Text style={{ color: C.muted, fontSize: 12, lineHeight: 18 }}>La session reste active tant que l'app est ouverte. Une reconnexion sera demandée après un redémarrage complet.</Text>
       </View>
       <View style={{ height: 1, backgroundColor: C.line }} />
       <View style={{ gap: 4 }}>
