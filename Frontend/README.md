@@ -23,19 +23,18 @@ The app uses `EXPO_PUBLIC_API_URL` and expects the base URL to end in `/api`.
 - Physical Android phone: use your computer's LAN IP, for example `http://192.168.1.25:4000/api`
 - Deployed backend: use its HTTPS base URL ending in `/api`
 
-The frontend calls `POST /api/auth/register`, `POST /api/auth/login`, and authenticated `POST /api/ai/ask` with a JSON body of `{ "question": "..." }` and an `Authorization: Bearer <token>` header for AI generation.
+The frontend calls `POST /api/auth/register`, `POST /api/auth/login`, and authenticated `POST /api/ai/ask` for AI generation. Generated packs are then saved to `POST /api/study-packs`.
 
-## Local persistence
+## Database-backed persistence
 
-AsyncStorage is used for device-local persistence:
+Study packs and notes are stored in PostgreSQL through the backend, associated with the authenticated user:
+- Generated study packs are automatically saved to the user's library.
+- Saved packs can be listed, reopened, and deleted from any device after signing in.
+- Personal notes are created, listed, and deleted through authenticated API routes.
+- The backend hashes passwords and stores users in PostgreSQL.
 
-- Generated study packs are automatically added to **Mes cours**.
-- Saved packs can be reopened or deleted from the library.
-- Personal notes survive screen changes and app restarts, and can be deleted.
-- The active pack, login session, and settings preferences are persisted locally.
+The frontend no longer uses AsyncStorage or a local-storage abstraction for courses or notes. The currently active pack and login token remain in memory; signing in again is required after a full app restart. Course and note data remains in the database when the app is closed or uninstalled.
 
-Local data stays on this device; it is not synced across devices or backed up to a user account. Removing app data or uninstalling the app may erase it. The backend currently stores users in process memory, so registered accounts may not survive a backend restart.
+## Backend features still pending
 
-## Current backend limitations
-
-The backend currently exposes authentication and AI pack generation only. Progress history, multi-user leaderboard, scheduled notifications, and cloud sync still need backend/API support. Their screens avoid displaying invented synced statistics. Haptics and reminders are saved as preferences but are not yet activated as system features.
+Progress history, multi-user leaderboard, scheduled notifications, and durable account preferences need additional models and API routes. The corresponding UI must not show fabricated synced statistics.
