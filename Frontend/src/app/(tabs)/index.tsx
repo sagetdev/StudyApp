@@ -3,9 +3,8 @@ import { router } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 import { Button, C, Card, Field, Heading, Page, Pill, SectionTitle, uiStyles } from '@/components/study-ui';
 import { useAuth } from '@/lib/auth-context';
-import { generateStudyPack } from '@/lib/api';
+import { generateStudyPack, createStudyPack } from '@/lib/api';
 import { setCurrentStudyPack } from '@/lib/study-pack-store';
-import { savePack } from '@/lib/local-storage';
 
 const suggestions = [
   { icon: '⌁', title: 'Sciences', prompt: 'Explique les bases de la biologie cellulaire avec des exemples.' },
@@ -25,7 +24,7 @@ export default function HomeScreen() {
     setError(''); setBusy(true);
     try {
       const pack = await generateStudyPack(text.trim(), session.token);
-      await savePack(pack);
+      await createStudyPack(pack, text.trim(), session.token);
       await setCurrentStudyPack(pack);
       router.push('/study-pack');
     } catch (e) { setError(e instanceof Error ? e.message : 'La génération a échoué. Réessaie.'); }
@@ -53,13 +52,13 @@ export default function HomeScreen() {
     </View>
 
     <View style={{ gap: 12 }}>
-      <Heading eyebrow="Commencer" title="Crée ton pack de révision" subtitle="Saisis un thème ou colle directement tes notes. Chaque pack généré est enregistré sur cet appareil." />
+      <Heading eyebrow="Commencer" title="Crée ton pack de révision" subtitle="Saisis un thème ou colle directement tes notes. Chaque pack généré est enregistré dans ton compte." />
       <Card>
         <Field label="Ton cours ou ton sujet" value={course} onChangeText={setCourse} placeholder="Ex. : la photosynthèse, chapitre 4…" multiline numberOfLines={5} />
         {error ? <Text accessibilityRole="alert" style={{ color: C.danger, fontSize: 12, lineHeight: 18 }}>{error}</Text> : null}
         <Button title="Générer mon pack  →" onPress={() => createPack()} loading={busy} />
         <Button title="Ouvrir mes cours enregistrés" variant="secondary" onPress={() => router.push('/library')} />
-        <Text style={{ color: C.muted, fontSize: 11, lineHeight: 16 }}>La bibliothèque est enregistrée localement. La génération IA nécessite une connexion au serveur.</Text>
+        <Text style={{ color: C.muted, fontSize: 11, lineHeight: 16 }}>Tes cours sont synchronisés avec ton compte. La génération IA nécessite une connexion au serveur.</Text>
       </Card>
     </View>
 
