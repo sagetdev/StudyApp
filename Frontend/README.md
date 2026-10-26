@@ -25,6 +25,17 @@ The app uses `EXPO_PUBLIC_API_URL` and expects the base URL to end in `/api`.
 
 The frontend calls `POST /api/auth/register`, `POST /api/auth/login`, and authenticated `POST /api/ai/ask` with a JSON body of `{ "question": "..." }` and an `Authorization: Bearer <token>` header for AI generation.
 
-## Current scope
+## Local persistence
 
-Authentication is held in app memory and resets when the app process restarts. The backend's current auth service also stores users in process memory, so users are not durable across backend restarts. The backend does not yet expose persistent study-pack history, scores, profile statistics, notes, or leaderboard endpoints; those features are not presented as synced data in this frontend yet.
+AsyncStorage is used for device-local persistence:
+
+- Generated study packs are automatically added to **Mes cours**.
+- Saved packs can be reopened or deleted from the library.
+- Personal notes survive screen changes and app restarts, and can be deleted.
+- The active pack, login session, and settings preferences are persisted locally.
+
+Local data stays on this device; it is not synced across devices or backed up to a user account. Removing app data or uninstalling the app may erase it. The backend currently stores users in process memory, so registered accounts may not survive a backend restart.
+
+## Current backend limitations
+
+The backend currently exposes authentication and AI pack generation only. Progress history, multi-user leaderboard, scheduled notifications, and cloud sync still need backend/API support. Their screens avoid displaying invented synced statistics. Haptics and reminders are saved as preferences but are not yet activated as system features.
