@@ -46,6 +46,11 @@ export default function StudyPackScreen() {
         </View>
       </Card>)}
     </View>
+    <Card style={{ backgroundColor: '#F0ECFF', borderColor: '#E8E0FF' }}>
+      <Text style={{ color: C.ink, fontSize: 15, fontWeight: '800' }}>Curieux d'en savoir plus ?</Text>
+      <Text style={{ color: C.muted, fontSize: 12, lineHeight: 19 }}>Utilise les pistes de l'IA pour explorer une question et générer un nouveau support d'étude.</Text>
+      <Button title="Approfondir avec l'IA →" variant="secondary" onPress={() => router.push('/tutor')} />
+    </Card>
     <Button title="Commencer les flashcards" onPress={() => router.push('/flashcards')} />
     <Button title="Retour à l'accueil" variant="quiet" onPress={() => router.replace('/(tabs)')} />
   </Page>;
