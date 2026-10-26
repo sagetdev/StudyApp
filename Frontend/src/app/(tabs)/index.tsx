@@ -24,7 +24,7 @@ export default function HomeScreen() {
     setError(''); setBusy(true);
     try {
       const pack = await generateStudyPack(text.trim(), session.token);
-      setCurrentStudyPack(pack);
+      await setCurrentStudyPack(pack);
       router.push('/study-pack');
     } catch (e) { setError(e instanceof Error ? e.message : 'La génération a échoué. Réessaie.'); }
     finally { setBusy(false); }
@@ -36,9 +36,9 @@ export default function HomeScreen() {
         <Text style={{ color: C.primary, fontWeight: '800', letterSpacing: 1, fontSize: 11 }}>STUDYAPP</Text>
         <Text style={{ color: C.ink, fontSize: 17, fontWeight: '800' }}>Salut, {session?.user.email.split('@')[0] || 'toi'} 👋</Text>
       </View>
-      <View style={{ width: 44, height: 44, borderRadius: 16, backgroundColor: C.primarySoft, alignItems: 'center', justifyContent: 'center' }}>
+      <Pressable accessibilityRole="button" accessibilityLabel="Ouvrir le profil" onPress={() => router.push('/(tabs)/profile')} style={{ width: 44, height: 44, borderRadius: 16, backgroundColor: C.primarySoft, alignItems: 'center', justifyContent: 'center' }}>
         <Text style={{ color: C.primary, fontSize: 19, fontWeight: '800' }}>{(session?.user.email[0] || 'S').toUpperCase()}</Text>
-      </View>
+      </Pressable>
     </View>
 
     <View style={{ backgroundColor: C.primary, borderRadius: 24, padding: 22, gap: 12, overflow: 'hidden' }}>
@@ -51,18 +51,19 @@ export default function HomeScreen() {
     </View>
 
     <View style={{ gap: 12 }}>
-      <Heading eyebrow="Commencer" title="Crée ton pack de révision" subtitle="Saisis un thème ou colle directement tes notes. L'IA prépare les supports." />
+      <Heading eyebrow="Commencer" title="Crée ton pack de révision" subtitle="Saisis un thème ou colle directement tes notes. Chaque pack généré est enregistré sur cet appareil." />
       <Card>
         <Field label="Ton cours ou ton sujet" value={course} onChangeText={setCourse} placeholder="Ex. : la photosynthèse, chapitre 4…" multiline numberOfLines={5} />
         {error ? <Text accessibilityRole="alert" style={{ color: C.danger, fontSize: 12, lineHeight: 18 }}>{error}</Text> : null}
         <Button title="Générer mon pack  →" onPress={() => createPack()} loading={busy} />
-        <Text style={{ color: C.muted, fontSize: 11, lineHeight: 16 }}>Nécessite une connexion au serveur. Les packs ne sont pas encore sauvegardés dans un historique backend.</Text>
+        <Button title="Ouvrir mes cours enregistrés" variant="secondary" onPress={() => router.push('/library')} />
+        <Text style={{ color: C.muted, fontSize: 11, lineHeight: 16 }}>La bibliothèque est enregistrée localement. La génération IA nécessite une connexion au serveur.</Text>
       </Card>
     </View>
 
     <View style={{ gap: 12 }}>
       <SectionTitle title="Besoin d'une idée ?" action="Exemples" />
-      {suggestions.map((item, i) => <Pressable key={item.title} onPress={() => { setCourse(item.prompt); createPack(item.prompt); }} style={({ pressed }) => [{ opacity: pressed ? 0.75 : 1 }]}>
+      {suggestions.map((item, i) => <Pressable key={item.title} onPress={() => { setCourse(item.prompt); void createPack(item.prompt); }} style={({ pressed }) => [{ opacity: pressed ? 0.75 : 1 }]}>
         <Card style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 14 }}>
           <View style={{ width: 46, height: 46, borderRadius: 15, backgroundColor: [C.primarySoft, C.blue, C.mint][i], alignItems: 'center', justifyContent: 'center' }}>
             <Text style={{ color: [C.primary, '#2865A8', C.green][i], fontSize: 24, fontWeight: '700' }}>{item.icon}</Text>
