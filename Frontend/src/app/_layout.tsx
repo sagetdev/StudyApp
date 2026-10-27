@@ -2,13 +2,14 @@ import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { AuthProvider } from '@/lib/auth-context';
-import { C } from '@/components/study-ui';
+import { C, initializeThemeMode, useThemeMode } from '@/components/study-ui';
 import { initializeStudyPackStore } from '@/lib/study-pack-store';
 
 function AppStack() {
-  useEffect(() => { void initializeStudyPackStore(); }, []);
+  const { mode } = useThemeMode();
+  useEffect(() => { void initializeStudyPackStore(); void initializeThemeMode(); }, []);
   return <>
-    <StatusBar style="dark" backgroundColor={C.bg} />
+    <StatusBar style={mode === 'dark' ? 'light' : 'dark'} backgroundColor={C.bg} />
     <Stack screenOptions={{
       headerShown: false,
       contentStyle: { backgroundColor: C.bg },
