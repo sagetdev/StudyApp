@@ -1,12 +1,13 @@
 import React, { useCallback, useState } from 'react';
 import { useFocusEffect, router } from 'expo-router';
 import { Alert, Pressable, Text, View } from 'react-native';
-import { Button, C, Card, Heading, Page, Pill } from '@/components/study-ui';
+import { Button, C, Card, Heading, Page, Pill, useThemeMode } from '@/components/study-ui';
 import { listStudyPacks, removeStudyPack, type SavedStudyPack } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
 import { setCurrentStudyPack } from '@/lib/study-pack-store';
 
 export default function LibraryScreen() {
+  useThemeMode();
   const { session } = useAuth();
   const [packs, setPacks] = useState<SavedStudyPack[]>([]);
   const [loading, setLoading] = useState(true);

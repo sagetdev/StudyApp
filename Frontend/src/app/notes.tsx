@@ -1,11 +1,12 @@
 import React, { useCallback, useState } from 'react';
 import { useFocusEffect } from 'expo-router';
 import { Alert, Text, View } from 'react-native';
-import { Button, C, Card, Field, Heading, Page, Pill } from '@/components/study-ui';
+import { Button, C, Card, Field, Heading, Page, Pill, useThemeMode } from '@/components/study-ui';
 import { createNote, listNotes, removeNote, type StudyNote } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
 
 export default function NotesScreen() {
+  useThemeMode();
   const { session } = useAuth();
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');

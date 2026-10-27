@@ -1,7 +1,7 @@
 import React from 'react';
 import { router } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
-import { Button, C, Card, Heading, Page, Pill } from '@/components/study-ui';
+import { Button, C, Card, Heading, Page, Pill, useThemeMode } from '@/components/study-ui';
 
 const methods = [
   { title: 'Flashcards', subtitle: 'Mémorise une notion à la fois.', icon: '▤', tone: C.primarySoft, color: C.primary, route: '/flashcards' },
@@ -12,6 +12,7 @@ const methods = [
 ];
 
 export default function ExploreScreen() {
+  useThemeMode();
   return <Page>
     <Heading eyebrow="Découvrir" title="À chaque notion, sa méthode." subtitle="Ouvre un outil de révision pour le pack actif ou choisis un cours enregistré." />
     <Card style={{ backgroundColor: '#F0ECFF', borderColor: '#E8E0FF' }}>

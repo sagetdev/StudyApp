@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { router } from 'expo-router';
 import { Text, View, Pressable } from 'react-native';
-import { Button, C, Card, Heading, Page, Pill, SectionTitle } from '@/components/study-ui';
+import { Button, C, Card, Heading, Page, Pill, SectionTitle, useThemeMode } from '@/components/study-ui';
 import { getCurrentStudyPack } from '@/lib/study-pack-store';
 
 export default function StudyPackScreen() {
+  useThemeMode();
   const pack = getCurrentStudyPack();
   const [openPage, setOpenPage] = useState(0);
   if (!pack) return <Page><Heading title="Aucun pack ouvert" subtitle="Génère un pack depuis l'accueil pour commencer à réviser." /><Button title="Retour à l'accueil" onPress={() => router.replace('/(tabs)')} /></Page>;

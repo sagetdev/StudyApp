@@ -1,9 +1,10 @@
 import React from 'react';
 import { router } from 'expo-router';
 import { Text, View } from 'react-native';
-import { Button, C, Card, Heading, Page, Pill } from '@/components/study-ui';
+import { Button, C, Card, Heading, Page, Pill, useThemeMode } from '@/components/study-ui';
 
 export default function RankingScreen() {
+  useThemeMode();
   return <Page>
     <Heading eyebrow="Communauté" title="Le classement" subtitle="Célèbre tes efforts et découvre ta progression parmi les apprenants." />
     <Card style={{ alignItems: 'center', paddingVertical: 30 }}>

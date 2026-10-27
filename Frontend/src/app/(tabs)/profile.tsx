@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { router } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
-import { Button, C, Card, Heading, Page, Pill } from '@/components/study-ui';
+import { Button, C, Card, Heading, Page, Pill, useThemeMode } from '@/components/study-ui';
 import { useAuth } from '@/lib/auth-context';
 
 const shortcuts = [
@@ -13,6 +13,7 @@ const shortcuts = [
 ] as const;
 
 export default function ProfileScreen() {
+  useThemeMode();
   const { session, signOut } = useAuth();
   const [busy, setBusy] = useState(false);
   const logout = async () => { setBusy(true); try { await signOut(); router.replace('/login'); } finally { setBusy(false); } };

@@ -1,10 +1,11 @@
 import React from 'react';
 import { router } from 'expo-router';
 import { Text, View } from 'react-native';
-import { Button, C, Card, Heading, Page, Pill } from '@/components/study-ui';
+import { Button, C, Card, Heading, Page, Pill, useThemeMode } from '@/components/study-ui';
 import { getCurrentStudyPack } from '@/lib/study-pack-store';
 
 export default function GlossaryScreen() {
+  useThemeMode();
   const pack = getCurrentStudyPack();
   if (!pack) return <Page><Heading title="Glossaire" subtitle="Génère un pack pour afficher les définitions." /><Button title="Accueil" onPress={() => router.replace('/(tabs)')} /></Page>;
   return <Page>

@@ -1,9 +1,10 @@
 import React from 'react';
 import { router } from 'expo-router';
 import { Text, View } from 'react-native';
-import { Button, C, Card, Heading, Page, Pill } from '@/components/study-ui';
+import { Button, C, Card, Heading, Page, Pill, useThemeMode } from '@/components/study-ui';
 
 export default function ProgressScreen() {
+  useThemeMode();
   return <Page>
     <Heading eyebrow="Ton évolution" title="Chaque session compte." subtitle="Un espace pensé pour visualiser tes habitudes et tes progrès au fil du temps." />
     <Card style={{ alignItems: 'center', paddingVertical: 28 }}>

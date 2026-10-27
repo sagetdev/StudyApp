@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { router } from 'expo-router';
 import { Text, View } from 'react-native';
-import { Button, C, Card, Heading, Page, Pill } from '@/components/study-ui';
+import { Button, C, Card, Heading, Page, Pill, useThemeMode } from '@/components/study-ui';
 import { getCurrentStudyPack } from '@/lib/study-pack-store';
 
 export default function QuizScreen() {
+  useThemeMode();
   const pack = getCurrentStudyPack();
   const questions = pack?.multipleChoiceQuiz || [];
   const [index, setIndex] = useState(0);

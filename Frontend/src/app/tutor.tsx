@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { router } from 'expo-router';
 import { Text, View } from 'react-native';
-import { Button, C, Card, Heading, Page, Pill } from '@/components/study-ui';
+import { Button, C, Card, Heading, Page, Pill, useThemeMode } from '@/components/study-ui';
 import { generateStudyPack, createStudyPack } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
 import { getCurrentStudyPack, setCurrentStudyPack } from '@/lib/study-pack-store';
 
 export default function TutorScreen() {
+  useThemeMode();
   const pack = getCurrentStudyPack();
   const { session } = useAuth();
   const [busyPrompt, setBusyPrompt] = useState('');

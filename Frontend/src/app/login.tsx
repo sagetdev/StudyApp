@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Link, Redirect, router } from 'expo-router';
 import { KeyboardAvoidingView, Platform, Text, View } from 'react-native';
-import { Button, C, Card, Field, Heading, Page } from '@/components/study-ui';
+import { Button, C, Card, Field, Heading, Page, useThemeMode } from '@/components/study-ui';
 import { useAuth } from '@/lib/auth-context';
 
 export default function LoginScreen() {
+  useThemeMode();
   const { session, loading, signIn } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { router } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
-import { Button, C, Card, Field, Heading, Page, Pill, SectionTitle, uiStyles } from '@/components/study-ui';
+import { Button, C, Card, Field, Heading, Page, Pill, SectionTitle, uiStyles, useThemeMode } from '@/components/study-ui';
 import { useAuth } from '@/lib/auth-context';
 import { generateStudyPack, createStudyPack } from '@/lib/api';
 import { setCurrentStudyPack } from '@/lib/study-pack-store';
@@ -13,6 +13,7 @@ const suggestions = [
 ];
 
 export default function HomeScreen() {
+  useThemeMode();
   const { session } = useAuth();
   const [course, setCourse] = useState('');
   const [error, setError] = useState('');
