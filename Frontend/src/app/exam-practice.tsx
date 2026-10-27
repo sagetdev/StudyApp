@@ -2,11 +2,21 @@ import React from 'react';
 import { router } from 'expo-router';
 import { Text, View } from 'react-native';
 import { Button, C, Card, Heading, Page, Pill, useThemeMode } from '@/components/study-ui';
+import { getLatestQuizResult, recordRevisionSession } from '@/lib/revision-progress';
 import { getCurrentStudyPack } from '@/lib/study-pack-store';
 
 export default function ExamPracticeScreen() {
   useThemeMode();
-  const questions = getCurrentStudyPack()?.examQuestions || [];
+  const pack = getCurrentStudyPack();
+  const questions = pack?.examQuestions || [];
+  const finishSession = async () => {
+    if (pack) {
+      const quiz = await getLatestQuizResult();
+      const result = quiz?.courseTitle === pack.overview.title ? quiz : null;
+      await recordRevisionSession({ courseTitle: pack.overview.title, flashcardsReviewed: pack.flashcards.length, quizCorrect: result?.correct ?? 0, quizTotal: result?.total ?? 0, recallQuestions: pack.activeRecallQuestions.length, examQuestions: pack.examQuestions.length });
+    }
+    router.replace('/progress');
+  };
   if (!questions.length) return <Page><Heading title="Préparation aux examens" subtitle="Génère un pack pour afficher les sujets." /><Button title="Accueil" onPress={() => router.replace('/(tabs)')} /></Page>;
   return <Page>
     <Heading eyebrow="Aller plus loin" title="Préparation aux examens" subtitle="Entraîne-toi à structurer des réponses complètes à partir des critères proposés." />
@@ -19,6 +29,6 @@ export default function ExamPracticeScreen() {
         <Text style={{ color: C.primary, fontWeight: '800' }}>{i + 1}.</Text><Text style={{ color: C.muted, fontSize: 13, lineHeight: 20, flex: 1 }}>{criterion}</Text>
       </View>)}
     </Card>)}
-    <Button title="Terminer la session ✓" onPress={() => router.replace('/progress')} />
+    <Button title="Terminer la session ✓" onPress={() => { void finishSession(); }} />
   </Page>;
 }

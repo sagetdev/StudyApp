@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { Text, View } from 'react-native';
 import { Button, C, Card, Heading, Page, Pill, useThemeMode } from '@/components/study-ui';
 import { getCurrentStudyPack } from '@/lib/study-pack-store';
+import { clearLatestQuizResult } from '@/lib/revision-progress';
 
 export default function RevisionScreen() {
   useThemeMode();
@@ -23,7 +24,7 @@ export default function RevisionScreen() {
         <View style={{ width: 40, height: 40, borderRadius: 14, backgroundColor: item.color, alignItems: 'center', justifyContent: 'center' }}><Text style={{ color: C.primary, fontSize: 18, fontWeight: '800' }}>{item.icon}</Text></View>
         <View style={{ flex: 1, gap: 3 }}><Text style={{ color: C.ink, fontSize: 13, fontWeight: '800' }}>{item.title}</Text><Text style={{ color: C.muted, fontSize: 12, lineHeight: 17 }}>{item.description}</Text></View>
       </View>)}
-      <Button title="Commencer le parcours  →" onPress={() => router.push('/flashcards')} disabled={!pack.flashcards.length} />
+      <Button title="Commencer le parcours  →" onPress={async () => { await clearLatestQuizResult(); router.push('/flashcards'); }} disabled={!pack.flashcards.length} />
       {!pack.flashcards.length ? <Text style={{ color: C.muted, fontSize: 12 }}>Ce pack ne contient pas de flashcards. Génère un nouveau pack pour lancer le parcours complet.</Text> : null}
     </Card> : <Card><Text style={{ color: C.ink, fontWeight: '800' }}>Aucun pack actif</Text><Text style={{ color: C.muted, fontSize: 13 }}>Crée ou ouvre un cours enregistré avant de commencer.</Text><Button title="Créer un pack" onPress={() => router.replace('/(tabs)')} /></Card>}
     {pack ? <Button title="Consulter le cours" variant="secondary" onPress={() => router.replace('/study-pack')} /> : null}

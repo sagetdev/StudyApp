@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { Text, View } from 'react-native';
 import { Button, C, Card, Heading, Page, Pill, useThemeMode } from '@/components/study-ui';
 import { getCurrentStudyPack } from '@/lib/study-pack-store';
+import { saveQuizResult } from '@/lib/revision-progress';
 
 export default function QuizScreen() {
   useThemeMode();
@@ -43,6 +44,6 @@ export default function QuizScreen() {
       <Text style={{ color: C.ink, fontSize: 13, lineHeight: 20 }}>{question.explanation}</Text>
       {!correct ? <Text style={{ color: C.muted, fontSize: 12 }}>Réponse attendue : {question.correctAnswer}</Text> : null}
     </Card> : null}
-    <Button title={!selected ? 'Sélectionne une réponse' : index === questions.length - 1 ? 'Voir mon résultat' : 'Question suivante →'} disabled={!selected} onPress={() => selected && (index === questions.length - 1 ? setFinished(true) : setIndex(index + 1))} />
+    <Button title={!selected ? 'Sélectionne une réponse' : index === questions.length - 1 ? 'Voir mon résultat' : 'Question suivante →'} disabled={!selected} onPress={() => { if (!selected) return; if (index === questions.length - 1) { const score = questions.reduce((sum, item, i) => sum + (answers[i] === item.correctAnswer ? 1 : 0), 0); void saveQuizResult({ courseTitle: pack?.overview.title || 'Cours', correct: score, total: questions.length }); setFinished(true); } else setIndex(index + 1); }} />
   </Page>;
 }
