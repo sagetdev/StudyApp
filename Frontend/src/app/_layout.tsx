@@ -2,18 +2,15 @@ import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { AuthProvider } from '@/lib/auth-context';
-import { C } from '@/components/study-ui';
+import { useColors } from '@/hooks/use-colors';
 import { initializeStudyPackStore } from '@/lib/study-pack-store';
 
 function AppStack() {
+  const c = useColors();
   useEffect(() => { void initializeStudyPackStore(); }, []);
   return <>
-    <StatusBar style="dark" backgroundColor={C.bg} />
-    <Stack screenOptions={{
-      headerShown: false,
-      contentStyle: { backgroundColor: C.bg },
-      animation: 'slide_from_right',
-    }}>
+    <StatusBar style="auto" />
+    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.bg }, animation: 'slide_from_right' }}>
       <Stack.Screen name="index" />
       <Stack.Screen name="login" />
       <Stack.Screen name="register" />

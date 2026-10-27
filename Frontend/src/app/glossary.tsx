@@ -1,23 +1,21 @@
 import React from 'react';
 import { router } from 'expo-router';
-import { Text, View } from 'react-native';
-import { Button, C, Card, Heading, Page, Pill } from '@/components/study-ui';
+import { Text } from 'react-native';
+import { Button, Card, EmptyState, Heading, Page, Pill } from '@/components/study-ui';
+import { type } from '@/constants/design';
+import { useColors } from '@/hooks/use-colors';
 import { getCurrentStudyPack } from '@/lib/study-pack-store';
 
 export default function GlossaryScreen() {
+  const c = useColors();
   const pack = getCurrentStudyPack();
-  if (!pack) return <Page><Heading title="Glossaire" subtitle="Génère un pack pour afficher les définitions." /><Button title="Accueil" onPress={() => router.replace('/(tabs)')} /></Page>;
-  return <Page>
+  if (!pack) return <Page back><EmptyState icon="glossary" title="Glossaire vide" text="Génère un pack pour afficher les définitions." action={<Button title="Aller à l'accueil" onPress={() => router.replace('/(tabs)')} />} /></Page>;
+  return <Page back>
     <Heading eyebrow="Ton pack" title="Glossaire" subtitle="Les concepts importants, expliqués simplement." />
-    <Pill>{pack.glossary.length} TERMES</Pill>
-    {pack.glossary.map((item, index) => <Card key={`${item.term}-${index}`}>
-      <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10 }}>
-        <View style={{ backgroundColor: C.primarySoft, borderRadius: 10, paddingHorizontal: 9, paddingVertical: 6 }}><Text style={{ color: C.primary, fontWeight: '800' }}>Aa</Text></View>
-        <View style={{ flex: 1, gap: 6 }}>
-          <Text style={{ color: C.ink, fontSize: 16, fontWeight: '800' }}>{item.term}</Text>
-          <Text style={{ color: C.muted, fontSize: 13, lineHeight: 21 }}>{item.definition}</Text>
-        </View>
-      </View>
+    <Pill tone="green">{pack.glossary.length} TERMES</Pill>
+    {pack.glossary.map((item, i) => <Card key={`${item.term}-${i}`}>
+      <Text style={[type.heading, { color: c.ink }]}>{item.term}</Text>
+      <Text style={[type.body, { color: c.muted }]}>{item.definition}</Text>
     </Card>)}
   </Page>;
 }

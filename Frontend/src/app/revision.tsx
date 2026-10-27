@@ -1,24 +1,30 @@
 import React from 'react';
 import { router } from 'expo-router';
-import { Text, View } from 'react-native';
-import { Button, C, Card, Heading, Page, Pill } from '@/components/study-ui';
+import { Text } from 'react-native';
+import { Button, Card, EmptyState, Heading, ListItem, Page, Pill } from '@/components/study-ui';
+import type { IconName } from '@/components/icon';
+import { type, type ToneName } from '@/constants/design';
+import { useColors } from '@/hooks/use-colors';
 import { getCurrentStudyPack } from '@/lib/study-pack-store';
 
+const options: Array<{ title: string; description: string; route: string; icon: IconName; tone: ToneName }> = [
+  { title: 'Flashcards', description: 'Mémorise les notions essentielles.', route: '/flashcards', icon: 'cards', tone: 'purple' },
+  { title: 'Quiz', description: 'Vérifie ta compréhension.', route: '/quiz', icon: 'quiz', tone: 'blue' },
+  { title: 'Rappel actif', description: "Retrouve l'information de mémoire.", route: '/recall', icon: 'recall', tone: 'green' },
+];
+
 export default function RevisionScreen() {
+  const c = useColors();
   const pack = getCurrentStudyPack();
-  const options = [
-    { title: 'Flashcards', description: 'Mémorise les notions essentielles.', route: '/flashcards', icon: '▤', color: C.primarySoft },
-    { title: 'Quiz', description: 'Vérifie ta compréhension.', route: '/quiz', icon: '✓', color: C.blue },
-    { title: 'Rappel actif', description: 'Récupère l’information de mémoire.', route: '/recall', icon: '↗', color: C.mint },
-  ] as const;
-  return <Page>
-    <Heading eyebrow="Session de révision" title="On passe à la pratique." subtitle={pack ? `Choisis comment réviser « ${pack.overview.title} ».` : 'Génère un pack depuis l’accueil pour démarrer une session.'} />
-    {pack ? <Card style={{ backgroundColor: '#F0ECFF', borderColor: '#E8E0FF' }}><Pill>PACK ACTIF</Pill><Text style={{ color: C.ink, fontSize: 17, fontWeight: '800' }}>{pack.overview.title}</Text><Text style={{ color: C.muted, fontSize: 12 }}>{pack.flashcards.length} flashcards · {pack.multipleChoiceQuiz.length} questions quiz</Text><Button title="Voir le pack" onPress={() => router.push('/study-pack')} variant="secondary" /></Card> : null}
-    {options.map((item) => <Card key={item.title} style={{ flexDirection: 'row', alignItems: 'center' }}>
-      <View style={{ width: 44, height: 44, borderRadius: 14, backgroundColor: item.color, alignItems: 'center', justifyContent: 'center' }}><Text style={{ color: C.primary, fontSize: 21, fontWeight: '800' }}>{item.icon}</Text></View>
-      <View style={{ flex: 1, gap: 4 }}><Text style={{ color: C.ink, fontSize: 14, fontWeight: '800' }}>{item.title}</Text><Text style={{ color: C.muted, fontSize: 12 }}>{item.description}</Text></View>
-      <Text onPress={() => router.push(item.route)} style={{ color: C.primary, fontSize: 22 }}>›</Text>
-    </Card>)}
-    {!pack ? <Button title="Créer mon premier pack" onPress={() => router.replace('/(tabs)')} /> : null}
+  if (!pack) return <Page back><EmptyState icon="book" title="Aucun pack actif" text="Génère un pack depuis l'accueil pour démarrer une session." action={<Button title="Créer mon premier pack" onPress={() => router.replace('/(tabs)')} />} /></Page>;
+  return <Page back>
+    <Heading eyebrow="Session de révision" title="On passe à la pratique." subtitle={`Choisis comment réviser « ${pack.overview.title} ».`} />
+    <Card tinted>
+      <Pill>PACK ACTIF</Pill>
+      <Text style={[type.heading, { color: c.ink }]}>{pack.overview.title}</Text>
+      <Text style={[type.caption, { color: c.muted }]}>{pack.flashcards.length} flashcards · {pack.multipleChoiceQuiz.length} questions de quiz</Text>
+      <Button title="Voir le pack" variant="secondary" onPress={() => router.push('/study-pack')} />
+    </Card>
+    {options.map((o) => <ListItem key={o.title} icon={o.icon} tone={o.tone} title={o.title} subtitle={o.description} onPress={() => router.push(o.route as never)} />)}
   </Page>;
 }

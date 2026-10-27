@@ -1,42 +1,45 @@
 import React, { useState } from 'react';
 import { Switch, Text, View } from 'react-native';
 import { router } from 'expo-router';
-import { Button, C, Card, Heading, Page, Pill } from '@/components/study-ui';
+import { Button, Card, Divider, Heading, Page, Pill } from '@/components/study-ui';
+import { space, type } from '@/constants/design';
+import { useColors } from '@/hooks/use-colors';
 import { useAuth } from '@/lib/auth-context';
 
 function Preference({ title, subtitle, value, onChange }: { title: string; subtitle: string; value: boolean; onChange: (value: boolean) => void }) {
-  return <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-    <View style={{ flex: 1, gap: 4 }}><Text style={{ color: C.ink, fontSize: 14, fontWeight: '700' }}>{title}</Text><Text style={{ color: C.muted, fontSize: 12, lineHeight: 18 }}>{subtitle}</Text></View>
-    <Switch value={value} onValueChange={onChange} trackColor={{ false: C.line, true: C.primary }} thumbColor="#FFFFFF" />
+  const c = useColors();
+  return <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md, minHeight: 56 }}>
+    <View style={{ flex: 1, gap: 2 }}>
+      <Text style={[type.bodyStrong, { color: c.ink }]}>{title}</Text>
+      <Text style={[type.caption, { color: c.muted }]}>{subtitle}</Text>
+    </View>
+    <Switch accessibilityLabel={title} value={value} onValueChange={onChange} trackColor={{ false: c.line, true: c.primary }} thumbColor="#FFFFFF" />
   </View>;
 }
 
 export default function SettingsScreen() {
+  const c = useColors();
   const { signOut } = useAuth();
   const [reminders, setReminders] = useState(false);
   const [haptics, setHaptics] = useState(true);
   const [busy, setBusy] = useState(false);
-  const logout = async () => {
-    setBusy(true);
-    try { await signOut(); router.replace('/login'); }
-    finally { setBusy(false); }
-  };
+  const logout = async () => { setBusy(true); try { await signOut(); router.replace('/login'); } finally { setBusy(false); } };
 
-  return <Page>
-    <Heading eyebrow="Personnalisation" title="Paramètres" subtitle="Configure ton expérience StudyApp." />
+  return <Page back>
+    <Heading eyebrow="Personnalisation" title="Paramètres" />
     <Card>
-      <Text style={{ color: C.primary, fontSize: 11, fontWeight: '800', letterSpacing: 1 }}>PRÉFÉRENCES DE CETTE SESSION</Text>
-      <Preference title="Rappels d'étude" subtitle="Les notifications automatiques ne sont pas encore disponibles." value={reminders} onChange={setReminders} />
-      <View style={{ height: 1, backgroundColor: C.line }} />
-      <Preference title="Retour haptique" subtitle="La prise en charge des vibrations sera ajoutée ultérieurement." value={haptics} onChange={setHaptics} />
+      <Text style={[type.label, { color: c.primary }]}>PRÉFÉRENCES DE CETTE SESSION</Text>
+      <Preference title="Rappels d'étude" subtitle="Les notifications ne sont pas encore disponibles." value={reminders} onChange={setReminders} />
+      <Divider />
+      <Preference title="Retour haptique" subtitle="Les vibrations seront ajoutées ultérieurement." value={haptics} onChange={setHaptics} />
     </Card>
     <Card>
-      <Text style={{ color: C.ink, fontSize: 15, fontWeight: '800' }}>Compte et données</Text>
-      <Text style={{ color: C.muted, fontSize: 13, lineHeight: 20 }}>Tes cours et tes notes sont sauvegardés dans la base de données, associés à ton compte. Ils sont disponibles après reconnexion sur un autre appareil.</Text>
+      <Text style={[type.heading, { color: c.ink }]}>Compte et données</Text>
+      <Text style={[type.body, { color: c.muted }]}>Tes cours et tes notes sont sauvegardés sur ton compte et disponibles après reconnexion.</Text>
       <Pill tone="green">SAUVEGARDE EN LIGNE</Pill>
-      <Button title="Ouvrir mes cours" variant="secondary" onPress={() => router.push('/library')} />
-      <Button title="Gérer mes notes" variant="secondary" onPress={() => router.push('/notes')} />
+      <Button title="Mes cours" variant="secondary" onPress={() => router.push('/library')} />
+      <Button title="Mes notes" variant="secondary" onPress={() => router.push('/notes')} />
     </Card>
-    <Button title="Se déconnecter" onPress={logout} loading={busy} variant="secondary" />
+    <Button title="Se déconnecter" variant="danger" onPress={logout} loading={busy} />
   </Page>;
 }
