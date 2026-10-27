@@ -1,105 +1,46 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { prisma } from '../lib/prisma';
 
-// Type utilisateur basique pour la simulation
-interface User {
-  id: string;
-  email: string;
-  passwordHash: string;
-}
+interface Credentials { email: string; password: string }
+interface AuthResponse { user: { id: string; email: string }; token: string }
 
-interface Register {
-  email: string;
-  password: string;
-}
-
-interface Login {
-  email: string;
-  password: string;
-}
-interface AuthResponse {
-  user: {
-    id: string;
-    email: string;
-  };
-  token: string;
-}
-
-// SIMULATION DE BASE DE DONNÉES (À remplacer par ton ORM / DB)
-const usersDb: User[] = [];
-
-const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_key_change_me';
+const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = '7d';
 
+function getJwtSecret(): string {
+  if (!JWT_SECRET) throw new Error('JWT_SECRET doit être configuré dans les variables d’environnement.');
+  return JWT_SECRET;
+}
+
 export class AuthService {
-  
-  // 1. Inscription
-  async register(data: Register): Promise<AuthResponse> {
-    const { email, password } = data;
+  async register(data: Credentials): Promise<AuthResponse> {
+    const email = data.email.trim().toLowerCase();
+    if (!email || !email.includes('@')) throw new Error('Adresse email invalide.');
+    if (data.password.length < 8) throw new Error('Le mot de passe doit contenir au moins 8 caractères.');
 
-    // Vérifier si l'utilisateur existe déjà
-    const existingUser = usersDb.find((user) => user.email === email);
-    if (existingUser) {
-      throw new Error('Cet email est déjà utilisé.');
+    const passwordHash = await bcrypt.hash(data.password, 12);
+    try {
+      const user = await prisma.user.create({ data: { email, password: passwordHash }, select: { id: true, email: true } });
+      return { user, token: this.generateToken(user.id, user.email) };
+    } catch (error) {
+      if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
+        throw new Error('Cet email est déjà utilisé.');
+      }
+      throw error;
     }
-
-    // Hacher le mot de passe
-    const salt = await bcrypt.genSalt(10);
-    const passwordHash = await bcrypt.hash(password, salt);
-
-    // Créer le nouvel utilisateur
-    const newUser: User = {
-      id: Date.now().toString(), // Génération d'ID temporaire
-      email,
-      passwordHash,
-    };
-
-    usersDb.push(newUser);
-
-    // Générer le JWT
-    const token = this.generateToken(newUser.id, newUser.email);
-
-    return {
-      user: {
-        id: newUser.id,
-        email: newUser.email,
-      },
-      token,
-    };
   }
 
-  // 2. Connexion
-  async login(data: Login): Promise<AuthResponse> {
-    const { email, password } = data;
-
-    // Récupérer l'utilisateur
-    const user = usersDb.find((u) => u.email === email);
-    if (!user) {
+  async login(data: Credentials): Promise<AuthResponse> {
+    const email = data.email.trim().toLowerCase();
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user || !(await bcrypt.compare(data.password, user.password))) {
       throw new Error('Identifiants invalides.');
     }
-
-    // Vérifier le mot de passe
-    const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
-    if (!isPasswordValid) {
-      throw new Error('Identifiants invalides.');
-    }
-
-    // Générer le JWT
-    const token = this.generateToken(user.id, user.email);
-
-    return {
-      user: {
-        id: user.id,
-        email: user.email,
-      },
-      token,
-    };
+    return { user: { id: user.id, email: user.email }, token: this.generateToken(user.id, user.email) };
   }
 
-  // Utilitaire privé pour signer les JWT
   private generateToken(userId: string, email: string): string {
-    return jwt.sign({ id: userId, email }, JWT_SECRET, {
-      expiresIn: JWT_EXPIRES_IN,
-    });
+    return jwt.sign({ id: userId, email }, getJwtSecret(), { expiresIn: JWT_EXPIRES_IN });
   }
-} 
+}

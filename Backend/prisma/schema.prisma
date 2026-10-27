@@ -8,9 +8,36 @@ generator client {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
+  id        String      @id @default(uuid())
+  email     String      @unique
   password  String
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  studyPacks StudyPack[]
+  notes      Note[]
+}
+
+model StudyPack {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  sourceText String?
+  content   Json
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model Note {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  body      String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
 }

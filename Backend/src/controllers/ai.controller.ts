@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import * as aiServices from "../services/ai.service";
+import { AllModelsFailedError } from "../services/ai-fallback";
 
 export const generateFullStudyPack = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -21,6 +22,10 @@ export const generateFullStudyPack = async (req: Request, res: Response): Promis
     } catch (e: any) {
         // 5. Implémentation du catch pour éviter que la requête ne plante sans rien dire
         console.error("Erreur lors de la génération du study pack :", e);
+        if (e instanceof AllModelsFailedError) {
+            res.status(503).json({ error: "Le service d'IA est momentanément surchargé. Réessaie dans quelques instants." });
+            return;
+        }
         res.status(500).json({ error: e.message || "Erreur interne du serveur." });
     }
 };
