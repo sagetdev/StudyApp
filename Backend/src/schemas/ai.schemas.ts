@@ -4,6 +4,7 @@ import * as z from "zod";
 export const comprehensiveStudyMaterialSchema = {
   type: Type.OBJECT,
   properties: {
+    coursePages: { type: Type.ARRAY, description: "Découpe le cours en 3 à 8 pages pédagogiques progressives, avec explications courtes, exemples et points clés.", items: { type: Type.OBJECT, properties: { title: { type: Type.STRING }, content: { type: Type.STRING }, examples: { type: Type.ARRAY, items: { type: Type.STRING } }, keyPoints: { type: Type.ARRAY, items: { type: Type.STRING } } }, required: ["title", "content", "examples", "keyPoints"] } },
     // 1. Métadonnées & Résumé du cours
     overview: {
       type: Type.OBJECT,
@@ -119,6 +120,7 @@ export const comprehensiveStudyMaterialSchema = {
   },
   required: [
     "overview",
+    "coursePages",
     "glossary",
     "flashcards",
     "multipleChoiceQuiz",

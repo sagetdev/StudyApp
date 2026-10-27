@@ -11,7 +11,7 @@ export default function RecallScreen() {
   const [showAnswer, setShowAnswer] = useState(false);
   if (!questions.length) return <Page><Heading title="Rappel actif" subtitle="Génère un pack pour accéder aux questions." /><Button title="Accueil" onPress={() => router.replace('/(tabs)')} /></Page>;
   const item = questions[index];
-  const move = () => { if (index === questions.length - 1) router.back(); else { setIndex(index + 1); setShowHint(false); setShowAnswer(false); } };
+  const move = () => { if (index === questions.length - 1) router.replace('/exam-practice'); else { setIndex(index + 1); setShowHint(false); setShowAnswer(false); } };
   return <Page>
     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}><Pill tone="amber">RAPPEL ACTIF</Pill><Text style={{ color: C.muted, fontSize: 12, fontWeight: '700' }}>{index + 1} / {questions.length}</Text></View>
     <Heading title={item.question} subtitle="Essaie de formuler ta réponse avant de révéler la solution." />

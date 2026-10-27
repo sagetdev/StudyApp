@@ -7,6 +7,7 @@ export interface StudyPack {
     keyTakeaways: string[];
     estimatedStudyTimeMinutes?: number;
   };
+  coursePages?: Array<{ title: string; content: string; examples: string[]; keyPoints: string[] }>;
   glossary: Array<{ term: string; definition: string }>;
   flashcards: Array<{ front: string; back: string; category?: string; difficulty: Difficulty }>;
   multipleChoiceQuiz: Array<{ question: string; options: string[]; correctAnswer: string; explanation: string }>;

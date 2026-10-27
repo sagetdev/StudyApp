@@ -18,5 +18,6 @@ export default function ExamPracticeScreen() {
         <Text style={{ color: C.primary, fontWeight: '800' }}>{i + 1}.</Text><Text style={{ color: C.muted, fontSize: 13, lineHeight: 20, flex: 1 }}>{criterion}</Text>
       </View>)}
     </Card>)}
+    <Button title="Terminer la session ✓" onPress={() => router.replace('/progress')} />
   </Page>;
 }
