@@ -1,32 +1,31 @@
 import React, { useCallback, useState } from 'react';
 import { useFocusEffect, router } from 'expo-router';
-import { ActivityIndicator, Alert, Pressable, Text, View } from 'react-native';
-import { Button, Card, EmptyState, ErrorText, Heading, Page, Pill } from '@/components/study-ui';
-import { space, type } from '@/constants/design';
-import { useColors } from '@/hooks/use-colors';
+import { Alert, Pressable, Text, View } from 'react-native';
+import { Button, C, Card, Heading, Page, Pill } from '@/components/study-ui';
 import { listStudyPacks, removeStudyPack, type SavedStudyPack } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
 import { setCurrentStudyPack } from '@/lib/study-pack-store';
 
 export default function LibraryScreen() {
-  const c = useColors();
   const { session } = useAuth();
-  const token = session?.token;
   const [packs, setPacks] = useState<SavedStudyPack[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   const refresh = useCallback(async () => {
-    if (!token) { setPacks([]); setLoading(false); return; }
+    if (!session?.token) { setPacks([]); setLoading(false); return; }
     setLoading(true); setError('');
-    try { setPacks(await listStudyPacks(token)); }
+    try { setPacks(await listStudyPacks(session.token)); }
     catch (e) { setError(e instanceof Error ? e.message : 'Impossible de charger les cours.'); }
     finally { setLoading(false); }
-  }, [token]);
+  }, [session?.token]);
 
   useFocusEffect(useCallback(() => { void refresh(); }, [refresh]));
 
-  const openPack = async (item: SavedStudyPack) => { await setCurrentStudyPack(item.content); router.push('/study-pack'); };
+  const openPack = async (item: SavedStudyPack) => {
+    await setCurrentStudyPack(item.content);
+    router.push('/study-pack');
+  };
 
   const removePack = (item: SavedStudyPack) => Alert.alert('Supprimer ce cours ?', `« ${item.title} » sera supprimé de ton compte.`, [
     { text: 'Annuler', style: 'cancel' },
@@ -37,22 +36,31 @@ export default function LibraryScreen() {
     } },
   ]);
 
-  return <Page back>
-    <Heading eyebrow="Bibliothèque" title="Mes cours" subtitle="Tes cours sont enregistrés sur ton compte." />
-    {!loading && packs.length ? <Pill>{packs.length} COURS</Pill> : null}
-    {error ? <Card><ErrorText>{error}</ErrorText><Button title="Réessayer" variant="secondary" onPress={() => void refresh()} /></Card> : null}
-    {loading ? <View style={{ paddingVertical: space.xl }}><ActivityIndicator color={c.primary} /></View>
-      : packs.length ? packs.map((item) => <Card key={item.id}>
-        <Pressable accessibilityRole="button" accessibilityLabel={`Ouvrir le cours ${item.title}`} onPress={() => void openPack(item)} style={({ pressed }) => ({ gap: space.sm, opacity: pressed ? 0.7 : 1 })}>
-          <Text style={[type.heading, { color: c.ink }]}>{item.title}</Text>
-          <Text numberOfLines={3} style={[type.body, { color: c.muted }]}>{item.content.overview.summary}</Text>
-          <Text style={[type.caption, { color: c.faint }]}>{new Date(item.createdAt).toLocaleDateString('fr-FR')} · {item.content.flashcards.length} flashcards · {item.content.multipleChoiceQuiz.length} questions</Text>
+  return <Page>
+    <Heading eyebrow="Bibliothèque personnelle" title="Mes cours enregistrés" subtitle="Tes cours sont stockés dans ton compte et suivent ta connexion sur tes appareils." />
+    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+      <Text style={{ color: C.ink, fontSize: 16, fontWeight: '800' }}>Tous mes cours</Text>
+      <Pill>{packs.length} COURS</Pill>
+    </View>
+    {error ? <Card><Text style={{ color: C.danger, fontSize: 13 }}>{error}</Text><Button title="Réessayer" onPress={() => void refresh()} variant="secondary" /></Card> : null}
+    {loading ? <Card><Text style={{ color: C.muted }}>Chargement depuis la base de données…</Text></Card> : packs.length ? packs.map((item) => (
+      <Card key={item.id} style={{ gap: 10 }}>
+        <Pressable accessibilityRole="button" onPress={() => void openPack(item)} style={{ gap: 8 }}>
+          <Text style={{ color: C.ink, fontSize: 16, fontWeight: '800' }}>{item.title}</Text>
+          <Text numberOfLines={3} style={{ color: C.muted, fontSize: 13, lineHeight: 20 }}>{item.content.overview.summary}</Text>
+          <Text style={{ color: C.muted, fontSize: 11 }}>{new Date(item.createdAt).toLocaleDateString()} · {item.content.flashcards.length} flashcards · {item.content.multipleChoiceQuiz.length} questions</Text>
         </Pressable>
-        <View style={{ flexDirection: 'row', gap: space.sm }}>
-          <View style={{ flex: 2 }}><Button title="Ouvrir" onPress={() => void openPack(item)} /></View>
-          <View style={{ flex: 1 }}><Button title="Supprimer" variant="danger" onPress={() => removePack(item)} /></View>
+        <View style={{ flexDirection: 'row', gap: 8 }}>
+          <View style={{ flex: 1 }}><Button title="Ouvrir le cours" onPress={() => void openPack(item)} /></View>
+          <View style={{ flex: 1 }}><Button title="Supprimer" variant="secondary" onPress={() => removePack(item)} /></View>
         </View>
-      </Card>)
-      : !error ? <EmptyState icon="book" title="Ta bibliothèque est vide" text="Génère un pack pour le retrouver ici." action={<Button title="Créer mon premier cours" onPress={() => router.replace('/(tabs)')} />} /> : null}
+      </Card>
+    )) : !loading && !error ? <Card style={{ alignItems: 'center', gap: 10, paddingVertical: 26 }}>
+      <Text style={{ color: C.primary, fontSize: 28 }}>▤</Text>
+      <Text style={{ color: C.ink, fontSize: 16, fontWeight: '800' }}>Ta bibliothèque est vide</Text>
+      <Text style={{ color: C.muted, fontSize: 13, textAlign: 'center', lineHeight: 20 }}>Génère un pack pour le sauvegarder dans ton compte.</Text>
+      <Button title="Créer mon premier cours" onPress={() => router.replace('/(tabs)')} />
+    </Card> : null}
+    <Button title="Retour à l'accueil" variant="secondary" onPress={() => router.replace('/(tabs)')} />
   </Page>;
 }
