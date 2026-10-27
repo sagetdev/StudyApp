@@ -6,19 +6,25 @@ import { getCurrentStudyPack } from '@/lib/study-pack-store';
 
 export default function RevisionScreen() {
   const pack = getCurrentStudyPack();
-  const options = [
-    { title: 'Flashcards', description: 'Mémorise les notions essentielles.', route: '/flashcards', icon: '▤', color: C.primarySoft },
-    { title: 'Quiz', description: 'Vérifie ta compréhension.', route: '/quiz', icon: '✓', color: C.blue },
-    { title: 'Rappel actif', description: 'Récupère l’information de mémoire.', route: '/recall', icon: '↗', color: C.mint },
-  ] as const;
+  const stages = [
+    { title: '1. Flashcards', description: 'Rappelle-toi les notions essentielles avant de retourner les cartes.', icon: '▤', color: C.primarySoft },
+    { title: '2. Quiz', description: 'Vérifie ta compréhension avec des questions à choix multiples.', icon: '✓', color: C.blue },
+    { title: '3. Rappel actif', description: 'Réponds sans regarder la solution pour renforcer ta mémoire.', icon: '↗', color: C.mint },
+    { title: '4. Préparation aux examens', description: 'Applique ce que tu as appris à des questions plus approfondies.', icon: '✎', color: C.amber },
+  ];
   return <Page>
-    <Heading eyebrow="Session de révision" title="On passe à la pratique." subtitle={pack ? `Choisis comment réviser « ${pack.overview.title} ».` : 'Génère un pack depuis l’accueil pour démarrer une session.'} />
-    {pack ? <Card style={{ backgroundColor: '#F0ECFF', borderColor: '#E8E0FF' }}><Pill>PACK ACTIF</Pill><Text style={{ color: C.ink, fontSize: 17, fontWeight: '800' }}>{pack.overview.title}</Text><Text style={{ color: C.muted, fontSize: 12 }}>{pack.flashcards.length} flashcards · {pack.multipleChoiceQuiz.length} questions quiz</Text><Button title="Voir le pack" onPress={() => router.push('/study-pack')} variant="secondary" /></Card> : null}
-    {options.map((item) => <Card key={item.title} style={{ flexDirection: 'row', alignItems: 'center' }}>
-      <View style={{ width: 44, height: 44, borderRadius: 14, backgroundColor: item.color, alignItems: 'center', justifyContent: 'center' }}><Text style={{ color: C.primary, fontSize: 21, fontWeight: '800' }}>{item.icon}</Text></View>
-      <View style={{ flex: 1, gap: 4 }}><Text style={{ color: C.ink, fontSize: 14, fontWeight: '800' }}>{item.title}</Text><Text style={{ color: C.muted, fontSize: 12 }}>{item.description}</Text></View>
-      <Text onPress={() => router.push(item.route)} style={{ color: C.primary, fontSize: 22 }}>›</Text>
-    </Card>)}
-    {!pack ? <Button title="Créer mon premier pack" onPress={() => router.replace('/(tabs)')} /> : null}
+    <Heading eyebrow="Parcours guidé" title="Une étape à la fois." subtitle="Un parcours progressif inspiré des apps d'apprentissage : avance à ton rythme et consolide tes acquis." />
+    {pack ? <Card style={{ gap: 14 }}>
+      <Pill tone="green">PACK ACTIF</Pill>
+      <Text style={{ color: C.ink, fontSize: 18, lineHeight: 24, fontWeight: '800' }}>{pack.overview.title}</Text>
+      <Text style={{ color: C.muted, fontSize: 12, lineHeight: 18 }}>Environ {pack.overview.estimatedStudyTimeMinutes || 15} minutes · {pack.flashcards.length + pack.multipleChoiceQuiz.length + pack.activeRecallQuestions.length + pack.examQuestions.length} activités</Text>
+      {stages.map((item, index) => <View key={item.title} style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+        <View style={{ width: 40, height: 40, borderRadius: 14, backgroundColor: item.color, alignItems: 'center', justifyContent: 'center' }}><Text style={{ color: C.primary, fontSize: 18, fontWeight: '800' }}>{item.icon}</Text></View>
+        <View style={{ flex: 1, gap: 3 }}><Text style={{ color: C.ink, fontSize: 13, fontWeight: '800' }}>{item.title}</Text><Text style={{ color: C.muted, fontSize: 12, lineHeight: 17 }}>{item.description}</Text></View>
+      </View>)}
+      <Button title="Commencer le parcours  →" onPress={() => router.push('/flashcards')} disabled={!pack.flashcards.length} />
+      {!pack.flashcards.length ? <Text style={{ color: C.muted, fontSize: 12 }}>Ce pack ne contient pas de flashcards. Génère un nouveau pack pour lancer le parcours complet.</Text> : null}
+    </Card> : <Card><Text style={{ color: C.ink, fontWeight: '800' }}>Aucun pack actif</Text><Text style={{ color: C.muted, fontSize: 13 }}>Crée ou ouvre un cours enregistré avant de commencer.</Text><Button title="Créer un pack" onPress={() => router.replace('/(tabs)')} /></Card>}
+    {pack ? <Button title="Consulter le cours" variant="secondary" onPress={() => router.replace('/study-pack')} /> : null}
   </Page>;
 }
