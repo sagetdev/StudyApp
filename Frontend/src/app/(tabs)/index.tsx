@@ -7,8 +7,8 @@ import { generateStudyPack, createStudyPack } from '@/lib/api';
 import { setCurrentStudyPack } from '@/lib/study-pack-store';
 
 const suggestions = [
-  { icon: '⌁', title: 'Sciences', prompt: 'Explique les bases de la biologie cellulaire avec des exemples.' },
-  { icon: '∑', title: 'Mathématiques', prompt: 'Crée un pack de révision sur les équations du second degré, avec méthodes, exemples corrigés et exercices progressifs.' },
+  { icon: '🧪', title: 'Sciences', prompt: 'Explique les bases de la biologie cellulaire avec des exemples.' },
+  { icon: '➕', title: 'Mathématiques', prompt: 'Crée un pack de révision sur les équations du second degré, avec méthodes, exemples corrigés et exercices progressifs.' },
   { icon: '◷', title: 'Histoire', prompt: 'Prépare un pack de révision sur les grandes étapes de la Révolution française, avec chronologie et personnages clés.' },
   { icon: '⚗', title: 'Chimie', prompt: 'Explique les réactions chimiques, les équations et leur équilibrage avec des exemples détaillés.' },
   { icon: '🌍', title: 'Géographie', prompt: 'Crée un cours de révision sur les climats du monde, leurs caractéristiques et des exemples régionaux.' },
@@ -74,7 +74,7 @@ export default function HomeScreen() {
         </Card>
       </View>
 
-      <View style={{ flex: wideLayout ? (extraWideLayout ? 1 : 1.05) : undefined, minWidth: 0, gap: 12 }}>
+      <View style={{ flex: wideLayout ? (extraWideLayout ? 1 : 1.05) : undefined, minWidth: 0, gap: 12, paddingTop: 12 }}>
         <SectionTitle title="Besoin d'une idée ?" action="Exemples" />
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
           {suggestions.map((item, i) => <Pressable key={item.title} onPress={() => { setCourse(item.prompt); void createPack(item.prompt); }} style={({ pressed }) => [{ opacity: pressed ? 0.75 : 1, flexGrow: 0, flexBasis: suggestionsGrid ? '47%' : 245, width: suggestionsGrid ? '47%' : undefined, minWidth: 0 }]}>
