@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
+import { Note, Prisma } from '../generated/client';
 
 export async function listNotes(req: Request, res: Response): Promise<void> {
   try {
@@ -40,7 +41,8 @@ export async function createNote(req: Request, res: Response): Promise<void> {
 
 export async function deleteNote(req: Request, res: Response): Promise<void> {
   try {
-    const result = await prisma.note.deleteMany({ where: { id: req.params.id, userId: req.user!.id } });
+    const noteId = typeof req.params.id === 'string' ? req.params.id : req.params.id[0];
+    const result = await prisma.note.deleteMany({where: { id: noteId , userId: req.user!.id } });
     if (!result.count) {
       res.status(404).json({ message: 'Note introuvable.' });
       return;

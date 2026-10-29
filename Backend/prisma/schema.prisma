@@ -1,31 +1,31 @@
-datasource db {
-  provider = "postgresql"
-}
-
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/client"
 }
 
+datasource db {
+  provider = "postgresql"
+}
+
 model User {
-  id        String      @id @default(uuid())
-  email     String      @unique
-  password  String
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  studyPacks StudyPack[]
+  id         String      @id @default(uuid())
+  email      String      @unique
+  password   String
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
   notes      Note[]
+  studyPacks StudyPack[]
 }
 
 model StudyPack {
-  id        String   @id @default(uuid())
-  userId    String
-  title     String
+  id         String   @id @default(uuid())
+  userId     String
+  title      String
   sourceText String?
-  content   Json
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content    Json
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt])
 }
@@ -34,7 +34,7 @@ model Note {
   id        String   @id @default(uuid())
   userId    String
   title     String
-  body      String   @db.Text
+  body      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
