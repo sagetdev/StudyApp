@@ -46,16 +46,16 @@ export default function HomeScreen() {
     <View style={{ backgroundColor: C.primary, borderRadius: 24, padding: 22, gap: 12, overflow: 'hidden' }}>
       <Pill tone="green">TON ESPACE D'APPRENTISSAGE</Pill>
       <Text style={{ color: '#FFFFFF', fontSize: 27, lineHeight: 33, fontWeight: '800', letterSpacing: -0.6 }}>Comprends mieux.{"\n"}Retiens plus longtemps.</Text>
-      <Text style={{ color: '#E6E1FF', fontSize: 14, lineHeight: 21 }}>Transforme tes notes en résumé, flashcards et quiz adaptés à ton cours.</Text>
+      <Text style={{ color: '#E6E1FF', fontSize: 14, lineHeight: 21 }}>Transforme tes notes en cours détaillé, exemples guidés, images de référence existantes, flashcards et quiz.</Text>
       <View style={{ alignSelf: 'flex-start', backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: 14, paddingHorizontal: 12, paddingVertical: 8 }}>
         <Text style={{ color: '#FFFFFF', fontSize: 12, fontWeight: '700' }}>✦  Un seul cours, plusieurs façons de réviser</Text>
       </View>
     </View>
 
     <View style={{ gap: 12 }}>
-      <Heading eyebrow="Commencer" title="Crée ton pack de révision" subtitle="Saisis un thème ou colle directement tes notes. Chaque pack généré est enregistré dans ton compte." />
+      <Heading eyebrow="Commencer" title="Crée ton pack de révision" subtitle="Saisis un thème ou colle tes notes. Tu peux aussi inclure des URL directes d’images de référence déjà existantes dans ton contenu : elles seront affichées dans les pages si elles sont fournies et exploitables. Chaque pack est enregistré dans ton compte." />
       <Card>
-        <Field label="Ton cours ou ton sujet" value={course} onChangeText={setCourse} placeholder="Ex. : la photosynthèse, chapitre 4…" multiline numberOfLines={5} />
+        <Field label="Ton cours ou ton sujet" value={course} onChangeText={setCourse} placeholder={"Ex. : la photosynthèse, chapitre 4…\n\nColle ici tes notes et, si tu en as, les URL d’images de référence existantes avec leur source."} multiline numberOfLines={7} />
         {error ? <Text accessibilityRole="alert" style={{ color: C.danger, fontSize: 12, lineHeight: 18 }}>{error}</Text> : null}
         <Button title="Générer mon pack  →" onPress={() => createPack()} loading={busy} />
         <Button title="Ouvrir mes cours enregistrés" variant="secondary" onPress={() => router.push('/library')} />
@@ -65,8 +65,9 @@ export default function HomeScreen() {
 
     <View style={{ gap: 12 }}>
       <SectionTitle title="Besoin d'une idée ?" action="Exemples" />
-      {suggestions.map((item, i) => <Pressable key={item.title} onPress={() => { setCourse(item.prompt); void createPack(item.prompt); }} style={({ pressed }) => [{ opacity: pressed ? 0.75 : 1 }]}>
-        <Card style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 14 }}>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+      {suggestions.map((item, i) => <Pressable key={item.title} onPress={() => { setCourse(item.prompt); void createPack(item.prompt); }} style={({ pressed }) => [{ opacity: pressed ? 0.75 : 1, flexGrow: 1, flexBasis: 245, minWidth: 0 }]}>
+        <Card style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 14, height: '100%' }}>
           <View style={{ width: 46, height: 46, borderRadius: 15, backgroundColor: [C.primarySoft, C.blue, C.mint][i], alignItems: 'center', justifyContent: 'center' }}>
             <Text style={{ color: [C.primary, '#2865A8', C.green][i], fontSize: 24, fontWeight: '700' }}>{item.icon}</Text>
           </View>
@@ -77,6 +78,7 @@ export default function HomeScreen() {
           <Text style={{ color: C.muted, fontSize: 22 }}>›</Text>
         </Card>
       </Pressable>)}
+      </View>
     </View>
   </Page>;
 }
