@@ -23,6 +23,7 @@ export default function HomeScreen() {
   const { width: screenWidth } = useWindowDimensions();
   const wideLayout = screenWidth >= 1050;
   const extraWideLayout = screenWidth >= 1400;
+  const suggestionsGrid = screenWidth >= 1050;
   const { session } = useAuth();
   const [course, setCourse] = useState('');
   const [error, setError] = useState('');
@@ -75,17 +76,17 @@ export default function HomeScreen() {
 
       <View style={{ flex: wideLayout ? (extraWideLayout ? 1 : 1.05) : undefined, minWidth: 0, gap: 12 }}>
         <SectionTitle title="Besoin d'une idée ?" action="Exemples" />
-        <View style={{ flexDirection: wideLayout ? 'column' : 'row', flexWrap: 'wrap', gap: 14 }}>
-          {suggestions.map((item, i) => <Pressable key={item.title} onPress={() => { setCourse(item.prompt); void createPack(item.prompt); }} style={({ pressed }) => [{ opacity: pressed ? 0.75 : 1, flexGrow: 1, flexBasis: wideLayout ? 'auto' : 245, minWidth: 0 }]}>
-            <Card style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: wideLayout ? 20 : 14, paddingHorizontal: wideLayout ? 20 : 14, minHeight: wideLayout ? 104 : undefined, height: '100%' }}>
-              <View style={{ width: wideLayout ? 58 : 46, height: wideLayout ? 58 : 46, borderRadius: 18, backgroundColor: [C.primarySoft, C.blue, C.mint][i], alignItems: 'center', justifyContent: 'center' }}>
-                <Text style={{ color: [C.primary, '#2865A8', C.green][i], fontSize: wideLayout ? 29 : 24, fontWeight: '700' }}>{item.icon}</Text>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+          {suggestions.map((item, i) => <Pressable key={item.title} onPress={() => { setCourse(item.prompt); void createPack(item.prompt); }} style={({ pressed }) => [{ opacity: pressed ? 0.75 : 1, flexGrow: 0, flexBasis: suggestionsGrid ? '47%' : 245, width: suggestionsGrid ? '47%' : undefined, minWidth: 0 }]}>
+            <Card style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: wideLayout ? 14 : 14, paddingHorizontal: wideLayout ? 14 : 14, minHeight: wideLayout ? 84 : undefined, height: '100%' }}>
+              <View style={{ width: wideLayout ? 42 : 46, height: wideLayout ? 42 : 46, borderRadius: 14, backgroundColor: [C.primarySoft, C.blue, C.mint][i], alignItems: 'center', justifyContent: 'center' }}>
+                <Text style={{ color: [C.primary, '#2865A8', C.green][i], fontSize: wideLayout ? 22 : 24, fontWeight: '700' }}>{item.icon}</Text>
               </View>
               <View style={{ flex: 1, gap: 3 }}>
-                <Text style={{ color: C.ink, fontWeight: '800', fontSize: wideLayout ? 17 : 14 }}>{item.title}</Text>
-                <Text style={{ color: C.muted, fontSize: wideLayout ? 14 : 12, lineHeight: wideLayout ? 20 : 16 }}>Générer un exemple de pack</Text>
+                <Text style={{ color: C.ink, fontWeight: '800', fontSize: wideLayout ? 14 : 14 }}>{item.title}</Text>
+                <Text style={{ color: C.muted, fontSize: wideLayout ? 11 : 12, lineHeight: wideLayout ? 15 : 16 }}>Générer un exemple de pack</Text>
               </View>
-              <Text style={{ color: C.muted, fontSize: wideLayout ? 28 : 22 }}>›</Text>
+              <Text style={{ color: C.muted, fontSize: wideLayout ? 22 : 22 }}>›</Text>
             </Card>
           </Pressable>)}
         </View>
