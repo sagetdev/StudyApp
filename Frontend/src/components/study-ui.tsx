@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { router, useSegments, type Href } from 'expo-router';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type TextInputProps, type ViewStyle } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions, type TextInputProps, type ViewStyle } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type ThemeMode = 'light' | 'dark';
@@ -91,13 +91,17 @@ export function Page({ children, scroll = true, style, showBack }: React.PropsWi
   showBack?: boolean;
 }>) {
   useThemeMode();
+  const { width: screenWidth } = useWindowDimensions();
+  const horizontalPadding = screenWidth >= 1440 ? 36 : screenWidth >= 900 ? 30 : screenWidth >= 600 ? 26 : 22;
+  const pageMaxWidth = screenWidth >= 1600 ? 1760 : 1500;
   const segments = useSegments();
   const route = String(segments[0] ?? '');
   // Les onglets ont déjà leur navigation; l'écran de connexion est la racine d'auth.
   const shouldShowBack = showBack ?? (route !== '(tabs)' && route !== 'login' && route !== 'index');
   const content = <>{shouldShowBack ? <BackArrow /> : null}{children}</>;
-  if (!scroll) return <View style={[styles.page, { backgroundColor: C.bg }, style]}>{content}</View>;
-  return <ScrollView style={[styles.scroll, { backgroundColor: C.bg }]} contentContainerStyle={[styles.page, { backgroundColor: C.bg }, style]} keyboardShouldPersistTaps="handled">{content}</ScrollView>;
+  const responsivePageStyle = { paddingHorizontal: horizontalPadding, maxWidth: pageMaxWidth };
+  if (!scroll) return <View style={[styles.page, responsivePageStyle, { backgroundColor: C.bg }, style]}>{content}</View>;
+  return <ScrollView style={[styles.scroll, { backgroundColor: C.bg }]} contentContainerStyle={[styles.page, responsivePageStyle, { backgroundColor: C.bg }, style]} keyboardShouldPersistTaps="handled">{content}</ScrollView>;
 }
 
 export function Heading({ title, subtitle, eyebrow }: { title: string; subtitle?: string; eyebrow?: string }) {
@@ -156,7 +160,7 @@ export const uiStyles = StyleSheet.create({
 
 const styles = StyleSheet.create({
   scroll: { flex: 1 },
-  page: { flexGrow: 1, paddingHorizontal: 22, paddingTop: 18, paddingBottom: 36, gap: 18, width: '100%', alignSelf: 'center', maxWidth: 960 },
+  page: { flexGrow: 1, paddingTop: 24, paddingBottom: 40, gap: 22, width: '100%', alignSelf: 'center' },
   heading: { gap: 7, marginBottom: 2 },
   eyebrow: { fontSize: 11, fontWeight: '800', letterSpacing: 1.2 },
   title: { fontSize: 28, lineHeight: 35, fontWeight: '800', letterSpacing: -0.6, flexShrink: 1 },
