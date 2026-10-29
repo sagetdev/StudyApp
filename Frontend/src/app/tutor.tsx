@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { router } from 'expo-router';
-import { Text, TextInput, View } from 'react-native';
+import { Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { Button, C, Card, Heading, Page, Pill, useThemeMode } from '@/components/study-ui';
 import { generateStudyPack, createStudyPack } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
@@ -8,6 +8,8 @@ import { getCurrentStudyPack, setCurrentStudyPack } from '@/lib/study-pack-store
 
 export default function TutorScreen() {
   useThemeMode();
+  const { width: screenWidth } = useWindowDimensions();
+  const wideLayout = screenWidth >= 1050;
   const pack = getCurrentStudyPack();
   const { session } = useAuth();
   const [busyPrompt, setBusyPrompt] = useState('');
@@ -35,6 +37,8 @@ export default function TutorScreen() {
   };
   return <Page>
     <Heading eyebrow="Approfondir" title="Explore plus loin." subtitle="Choisis une question suggérée pour générer un nouveau pack d'apprentissage autour du sujet." />
+    <View style={{ flexDirection: wideLayout ? 'row' : 'column', alignItems: 'stretch', gap: 22, width: '100%' }}>
+    <View style={{ flex: wideLayout ? 1.05 : undefined, minWidth: 0, gap: 18 }}> 
     <Card style={{ backgroundColor: '#F0ECFF', borderColor: '#E8E0FF' }}>
       <Pill>ASSISTANT D'ÉTUDE</Pill>
       <Text style={{ color: C.ink, fontSize: 17, fontWeight: '800', lineHeight: 24 }}>{pack?.overview.title || 'Choisis une piste pour commencer'}</Text>
@@ -70,6 +74,9 @@ export default function TutorScreen() {
       />
     </Card>
     {error ? <Text accessibilityRole="alert" style={{ color: C.danger, fontSize: 13 }}>{error}</Text> : null}
+    </View>
+    <View style={{ flex: wideLayout ? 0.95 : undefined, minWidth: 0, gap: 12 }}>
+    <Heading eyebrow="Suggestions" title="Questions pour approfondir" subtitle="Choisis une piste proposée par l’IA ou pose ta propre question." />
     {prompts.length ? prompts.map((prompt, index) => <Card key={`${index}-${prompt}`} style={{ flexDirection: 'row', alignItems: 'center' }}>
       <View style={{ width: 34, height: 34, borderRadius: 11, backgroundColor: C.primarySoft, alignItems: 'center', justifyContent: 'center' }}><Text style={{ color: C.primary, fontSize: 18, fontWeight: '800' }}>?</Text></View>
       <View style={{ flex: 1, gap: 10 }}>
@@ -77,5 +84,7 @@ export default function TutorScreen() {
         <Button title={busyPrompt === prompt ? 'Génération…' : 'Explorer cette question →'} onPress={() => ask(prompt)} loading={busyPrompt === prompt} disabled={!!busyPrompt && busyPrompt !== prompt} variant="secondary" />
       </View>
     </Card>) : <Card><Text style={{ color: C.muted, fontSize: 13, lineHeight: 20 }}>Les suggestions de questions apparaîtront ici après la génération d'un pack.</Text><Button title="Créer un pack" onPress={() => router.replace('/(tabs)')} /></Card>}
+    </View>
+    </View>
   </Page>;
 }
