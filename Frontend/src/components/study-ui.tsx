@@ -85,10 +85,11 @@ export function BackArrow({ fallbackHref, label = 'Retour à la page précédent
   </Pressable>;
 }
 
-export function Page({ children, scroll = true, style, showBack }: React.PropsWithChildren<{
+export function Page({ children, scroll = true, style, showBack, scrollRef }: React.PropsWithChildren<{
   scroll?: boolean;
   style?: ViewStyle;
   showBack?: boolean;
+  scrollRef?: React.Ref<ScrollView>;
 }>) {
   useThemeMode();
   const { width: screenWidth } = useWindowDimensions();
@@ -101,7 +102,7 @@ export function Page({ children, scroll = true, style, showBack }: React.PropsWi
   const content = <>{shouldShowBack ? <BackArrow /> : null}{children}</>;
   const responsivePageStyle = { paddingHorizontal: horizontalPadding, maxWidth: pageMaxWidth };
   if (!scroll) return <View style={[styles.page, responsivePageStyle, { backgroundColor: C.bg }, style]}>{content}</View>;
-  return <ScrollView style={[styles.scroll, { backgroundColor: C.bg }]} contentContainerStyle={[styles.page, responsivePageStyle, { backgroundColor: C.bg }, style]} keyboardShouldPersistTaps="handled">{content}</ScrollView>;
+  return <ScrollView ref={scrollRef} style={[styles.scroll, { backgroundColor: C.bg }]} contentContainerStyle={[styles.page, responsivePageStyle, { backgroundColor: C.bg }, style]} keyboardShouldPersistTaps="handled">{content}</ScrollView>;
 }
 
 export function Heading({ title, subtitle, eyebrow }: { title: string; subtitle?: string; eyebrow?: string }) {
