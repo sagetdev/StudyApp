@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { router } from 'expo-router';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, Text, View, useWindowDimensions } from 'react-native';
 import { Button, C, Card, Field, Heading, Page, Pill, SectionTitle, uiStyles, useThemeMode } from '@/components/study-ui';
 import { useAuth } from '@/lib/auth-context';
 import { generateStudyPack, createStudyPack } from '@/lib/api';
@@ -14,6 +14,8 @@ const suggestions = [
 
 export default function HomeScreen() {
   useThemeMode();
+  const { width: screenWidth } = useWindowDimensions();
+  const wideLayout = screenWidth >= 1050;
   const { session } = useAuth();
   const [course, setCourse] = useState('');
   const [error, setError] = useState('');
@@ -52,32 +54,34 @@ export default function HomeScreen() {
       </View>
     </View>
 
-    <View style={{ gap: 12 }}>
-      <Heading eyebrow="Commencer" title="Crée ton pack de révision" subtitle="Saisis un thème ou colle tes notes. Tu peux aussi inclure des URL directes d’images de référence déjà existantes dans ton contenu : elles seront affichées dans les pages si elles sont fournies et exploitables. Chaque pack est enregistré dans ton compte." />
-      <Card>
-        <Field label="Ton cours ou ton sujet" value={course} onChangeText={setCourse} placeholder={"Ex. : la photosynthèse, chapitre 4…\n\nColle ici tes notes et, si tu en as, les URL d’images de référence existantes avec leur source."} multiline numberOfLines={7} />
-        {error ? <Text accessibilityRole="alert" style={{ color: C.danger, fontSize: 12, lineHeight: 18 }}>{error}</Text> : null}
-        <Button title="Générer mon pack  →" onPress={() => createPack()} loading={busy} />
-        <Button title="Ouvrir mes cours enregistrés" variant="secondary" onPress={() => router.push('/library')} />
-        <Text style={{ color: C.muted, fontSize: 11, lineHeight: 16 }}>Tes cours sont synchronisés avec ton compte. La génération IA nécessite une connexion au serveur.</Text>
-      </Card>
-    </View>
-
-    <View style={{ gap: 12 }}>
-      <SectionTitle title="Besoin d'une idée ?" action="Exemples" />
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
-      {suggestions.map((item, i) => <Pressable key={item.title} onPress={() => { setCourse(item.prompt); void createPack(item.prompt); }} style={({ pressed }) => [{ opacity: pressed ? 0.75 : 1, flexGrow: 1, flexBasis: 245, minWidth: 0 }]}>
-        <Card style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 14, height: '100%' }}>
-          <View style={{ width: 46, height: 46, borderRadius: 15, backgroundColor: [C.primarySoft, C.blue, C.mint][i], alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={{ color: [C.primary, '#2865A8', C.green][i], fontSize: 24, fontWeight: '700' }}>{item.icon}</Text>
-          </View>
-          <View style={{ flex: 1, gap: 3 }}>
-            <Text style={{ color: C.ink, fontWeight: '800', fontSize: 14 }}>{item.title}</Text>
-            <Text style={{ color: C.muted, fontSize: 12 }}>Générer un exemple de pack</Text>
-          </View>
-          <Text style={{ color: C.muted, fontSize: 22 }}>›</Text>
+    <View style={{ flexDirection: wideLayout ? 'row' : 'column', alignItems: 'stretch', gap: 20 }}>
+      <View style={{ flex: wideLayout ? 1.15 : undefined, minWidth: 0, gap: 12 }}>
+        <Heading eyebrow="Commencer" title="Crée ton pack de révision" subtitle="Saisis un thème ou colle tes notes. Tu peux aussi inclure des URL directes d’images de référence déjà existantes dans ton contenu : elles seront affichées dans les pages si elles sont fournies et exploitables. Chaque pack est enregistré dans ton compte." />
+        <Card>
+          <Field label="Ton cours ou ton sujet" value={course} onChangeText={setCourse} placeholder={"Ex. : la photosynthèse, chapitre 4…\n\nColle ici tes notes et, si tu en as, les URL d’images de référence existantes avec leur source."} multiline numberOfLines={7} />
+          {error ? <Text accessibilityRole="alert" style={{ color: C.danger, fontSize: 12, lineHeight: 18 }}>{error}</Text> : null}
+          <Button title="Générer mon pack  →" onPress={() => createPack()} loading={busy} />
+          <Button title="Ouvrir mes cours enregistrés" variant="secondary" onPress={() => router.push('/library')} />
+          <Text style={{ color: C.muted, fontSize: 11, lineHeight: 16 }}>Tes cours sont synchronisés avec ton compte. La génération IA nécessite une connexion au serveur.</Text>
         </Card>
-      </Pressable>)}
+      </View>
+
+      <View style={{ flex: wideLayout ? 0.85 : undefined, minWidth: 0, gap: 12 }}>
+        <SectionTitle title="Besoin d'une idée ?" action="Exemples" />
+        <View style={{ flexDirection: wideLayout ? 'column' : 'row', flexWrap: 'wrap', gap: 12 }}>
+          {suggestions.map((item, i) => <Pressable key={item.title} onPress={() => { setCourse(item.prompt); void createPack(item.prompt); }} style={({ pressed }) => [{ opacity: pressed ? 0.75 : 1, flexGrow: 1, flexBasis: wideLayout ? 'auto' : 245, minWidth: 0 }]}>
+            <Card style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 14, height: '100%' }}>
+              <View style={{ width: 46, height: 46, borderRadius: 15, backgroundColor: [C.primarySoft, C.blue, C.mint][i], alignItems: 'center', justifyContent: 'center' }}>
+                <Text style={{ color: [C.primary, '#2865A8', C.green][i], fontSize: 24, fontWeight: '700' }}>{item.icon}</Text>
+              </View>
+              <View style={{ flex: 1, gap: 3 }}>
+                <Text style={{ color: C.ink, fontWeight: '800', fontSize: 14 }}>{item.title}</Text>
+                <Text style={{ color: C.muted, fontSize: 12 }}>Générer un exemple de pack</Text>
+              </View>
+              <Text style={{ color: C.muted, fontSize: 22 }}>›</Text>
+            </Card>
+          </Pressable>)}
+        </View>
       </View>
     </View>
   </Page>;
