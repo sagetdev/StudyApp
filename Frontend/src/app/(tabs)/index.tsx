@@ -16,6 +16,7 @@ export default function HomeScreen() {
   useThemeMode();
   const { width: screenWidth } = useWindowDimensions();
   const wideLayout = screenWidth >= 1050;
+  const extraWideLayout = screenWidth >= 1400;
   const { session } = useAuth();
   const [course, setCourse] = useState('');
   const [error, setError] = useState('');
@@ -55,7 +56,7 @@ export default function HomeScreen() {
     </View>
 
     <View style={{ flexDirection: wideLayout ? 'row' : 'column', alignItems: 'stretch', gap: 20 }}>
-      <View style={{ flex: wideLayout ? 1.15 : undefined, minWidth: 0, gap: 12 }}>
+      <View style={{ flex: wideLayout ? (extraWideLayout ? 1 : 0.95) : undefined, minWidth: 0, gap: 12 }}>
         <Heading eyebrow="Commencer" title="Crée ton pack de révision" subtitle="Saisis un thème ou colle tes notes. Tu peux aussi inclure des URL directes d’images de référence déjà existantes dans ton contenu : elles seront affichées dans les pages si elles sont fournies et exploitables. Chaque pack est enregistré dans ton compte." />
         <Card>
           <Field label="Ton cours ou ton sujet" value={course} onChangeText={setCourse} placeholder={"Ex. : la photosynthèse, chapitre 4…\n\nColle ici tes notes et, si tu en as, les URL d’images de référence existantes avec leur source."} multiline numberOfLines={7} />
@@ -66,19 +67,19 @@ export default function HomeScreen() {
         </Card>
       </View>
 
-      <View style={{ flex: wideLayout ? 0.85 : undefined, minWidth: 0, gap: 12 }}>
+      <View style={{ flex: wideLayout ? (extraWideLayout ? 1 : 1.05) : undefined, minWidth: 0, gap: 12 }}>
         <SectionTitle title="Besoin d'une idée ?" action="Exemples" />
-        <View style={{ flexDirection: wideLayout ? 'column' : 'row', flexWrap: 'wrap', gap: 12 }}>
+        <View style={{ flexDirection: wideLayout ? 'column' : 'row', flexWrap: 'wrap', gap: 14 }}>
           {suggestions.map((item, i) => <Pressable key={item.title} onPress={() => { setCourse(item.prompt); void createPack(item.prompt); }} style={({ pressed }) => [{ opacity: pressed ? 0.75 : 1, flexGrow: 1, flexBasis: wideLayout ? 'auto' : 245, minWidth: 0 }]}>
-            <Card style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 14, height: '100%' }}>
-              <View style={{ width: 46, height: 46, borderRadius: 15, backgroundColor: [C.primarySoft, C.blue, C.mint][i], alignItems: 'center', justifyContent: 'center' }}>
-                <Text style={{ color: [C.primary, '#2865A8', C.green][i], fontSize: 24, fontWeight: '700' }}>{item.icon}</Text>
+            <Card style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: wideLayout ? 20 : 14, paddingHorizontal: wideLayout ? 20 : 14, minHeight: wideLayout ? 104 : undefined, height: '100%' }}>
+              <View style={{ width: wideLayout ? 58 : 46, height: wideLayout ? 58 : 46, borderRadius: 18, backgroundColor: [C.primarySoft, C.blue, C.mint][i], alignItems: 'center', justifyContent: 'center' }}>
+                <Text style={{ color: [C.primary, '#2865A8', C.green][i], fontSize: wideLayout ? 29 : 24, fontWeight: '700' }}>{item.icon}</Text>
               </View>
               <View style={{ flex: 1, gap: 3 }}>
-                <Text style={{ color: C.ink, fontWeight: '800', fontSize: 14 }}>{item.title}</Text>
-                <Text style={{ color: C.muted, fontSize: 12 }}>Générer un exemple de pack</Text>
+                <Text style={{ color: C.ink, fontWeight: '800', fontSize: wideLayout ? 17 : 14 }}>{item.title}</Text>
+                <Text style={{ color: C.muted, fontSize: wideLayout ? 14 : 12, lineHeight: wideLayout ? 20 : 16 }}>Générer un exemple de pack</Text>
               </View>
-              <Text style={{ color: C.muted, fontSize: 22 }}>›</Text>
+              <Text style={{ color: C.muted, fontSize: wideLayout ? 28 : 22 }}>›</Text>
             </Card>
           </Pressable>)}
         </View>
