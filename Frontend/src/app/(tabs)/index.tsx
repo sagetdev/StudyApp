@@ -8,8 +8,14 @@ import { setCurrentStudyPack } from '@/lib/study-pack-store';
 
 const suggestions = [
   { icon: '⌁', title: 'Sciences', prompt: 'Explique les bases de la biologie cellulaire avec des exemples.' },
-  { icon: '∑', title: 'Mathématiques', prompt: 'Crée un pack de révision sur les équations du second degré.' },
-  { icon: '◷', title: 'Histoire', prompt: 'Prépare un pack de révision sur les grandes étapes de la Révolution française.' },
+  { icon: '∑', title: 'Mathématiques', prompt: 'Crée un pack de révision sur les équations du second degré, avec méthodes, exemples corrigés et exercices progressifs.' },
+  { icon: '◷', title: 'Histoire', prompt: 'Prépare un pack de révision sur les grandes étapes de la Révolution française, avec chronologie et personnages clés.' },
+  { icon: '⚗', title: 'Chimie', prompt: 'Explique les réactions chimiques, les équations et leur équilibrage avec des exemples détaillés.' },
+  { icon: '🌍', title: 'Géographie', prompt: 'Crée un cours de révision sur les climats du monde, leurs caractéristiques et des exemples régionaux.' },
+  { icon: '✍', title: 'Français', prompt: 'Prépare une leçon sur les figures de style avec définitions, exemples et exercices de reconnaissance.' },
+  { icon: '🇬🇧', title: 'Anglais', prompt: 'Crée un cours de révision sur les temps anglais, leur utilisation, des exemples et des exercices.' },
+  { icon: '💻', title: 'Informatique', prompt: 'Explique les bases de la programmation avec variables, conditions, boucles et petits exemples pratiques.' },
+  { icon: '🧠', title: 'Psychologie', prompt: 'Prépare un cours d’introduction à la mémoire et à l’apprentissage avec concepts clés, exemples et quiz.' },
 ];
 
 export default function HomeScreen() {
