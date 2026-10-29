@@ -11,6 +11,9 @@ const COURSE_GENERATION_PROMPT = `
 Tu es un professeur expert et un concepteur pédagogique rigoureux. Génère un vrai cours approfondi et un parcours complet de révision à partir du contenu fourni.
 
 RÈGLES PÉDAGOGIQUES
+- Le contenu fourni peut inclure le sujet d'un cours existant et une question personnalisée de l'étudiant. Traite la question comme la priorité pédagogique, mais garde tout le pack directement lié au sujet du cours indiqué.
+- Personnalise les explications, les analogies, les exemples et les exercices pour répondre à la demande précise. Ne te contente pas de répéter le cours initial.
+- Si la question est ambiguë, interprète-la au mieux à partir du contexte du cours. Si elle semble sans rapport, ne génère pas un cours indépendant sur un autre sujet : recentre la réponse sur le cours actuel et explique brièvement le lien pertinent, sans inventer de lien artificiel.
 - Découpe le cours en 8 à 14 pages progressives lorsque la matière le permet. Chaque page doit apporter une notion nouvelle; aucun remplissage répétitif.
 - Chaque page contient un objectif d'apprentissage, une explication développée en plusieurs paragraphes, 2 à 4 exemples concrets (dont un exemple résolu étape par étape quand pertinent), 3 à 6 points clés, les erreurs fréquentes et 2 à 4 questions de vérification avec réponse et explication.
 - Définis les termes techniques, explique le « pourquoi » et le « comment », donne des étapes intermédiaires, des analogies pertinentes et des applications pratiques.
