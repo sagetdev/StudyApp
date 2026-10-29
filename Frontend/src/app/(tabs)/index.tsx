@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { router } from 'expo-router';
-import { Pressable, Text, View, useWindowDimensions } from 'react-native';
+import { Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native';
 import { Button, C, Card, Field, Heading, Page, Pill, SectionTitle, uiStyles, useThemeMode } from '@/components/study-ui';
 import { useAuth } from '@/lib/auth-context';
 import { generateStudyPack, createStudyPack } from '@/lib/api';
@@ -25,9 +25,26 @@ export default function HomeScreen() {
   const extraWideLayout = screenWidth >= 1400;
   const suggestionsGrid = screenWidth >= 1050;
   const { session } = useAuth();
+  const pageScrollRef = useRef<ScrollView | null>(null);
+  const courseFormRef = useRef<View | null>(null);
   const [course, setCourse] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+
+  const selectSuggestion = (prompt: string) => {
+    setCourse(prompt);
+    setError('');
+    // Amène le formulaire dans la zone visible avec un défilement animé.
+    const scrollView = pageScrollRef.current;
+    const form = courseFormRef.current;
+    if (scrollView && form) {
+      form.measureLayout(
+        scrollView,
+        (_x, y) => scrollView.scrollTo({ y: Math.max(0, y - 24), animated: true }),
+        () => scrollView.scrollTo({ y: 0, animated: true }),
+      );
+    }
+  };
 
   const createPack = async (text = course) => {
     if (!session?.token) { router.replace('/login'); return; }
@@ -42,7 +59,7 @@ export default function HomeScreen() {
     finally { setBusy(false); }
   };
 
-  return <Page>
+  return <Page scrollRef={pageScrollRef}>
     <View style={uiStyles.spread}>
       <View style={{ gap: 4, flex: 1 }}>
         <Text style={{ color: C.primary, fontWeight: '800', letterSpacing: 1, fontSize: 11 }}>STUDYAPP</Text>
@@ -63,7 +80,7 @@ export default function HomeScreen() {
     </View>
 
     <View style={{ flexDirection: wideLayout ? 'row' : 'column', alignItems: 'stretch', gap: 20 }}>
-      <View style={{ flex: wideLayout ? (extraWideLayout ? 1 : 0.95) : undefined, minWidth: 0, gap: 12 }}>
+      <View ref={courseFormRef} collapsable={false} style={{ flex: wideLayout ? (extraWideLayout ? 1 : 0.95) : undefined, minWidth: 0, gap: 12 }}>
         <Heading eyebrow="Commencer" title="Crée ton pack de révision" subtitle="Saisis un thème ou colle tes notes. Tu peux aussi inclure des URL directes d’images de référence déjà existantes dans ton contenu : elles seront affichées dans les pages si elles sont fournies et exploitables. Chaque pack est enregistré dans ton compte." />
         <Card>
           <Field label="Ton cours ou ton sujet" value={course} onChangeText={setCourse} placeholder={"Ex. : la photosynthèse, chapitre 4…\n\nColle ici tes notes et, si tu en as, les URL d’images de référence existantes avec leur source."} multiline numberOfLines={7} />
@@ -77,7 +94,7 @@ export default function HomeScreen() {
       <View style={{ flex: wideLayout ? (extraWideLayout ? 1 : 1.05) : undefined, minWidth: 0, gap: 12, paddingTop: 12 }}>
         <SectionTitle title="Besoin d'une idée ?" action="Exemples" />
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
-          {suggestions.map((item, i) => <Pressable key={item.title} onPress={() => { setCourse(item.prompt); void createPack(item.prompt); }} style={({ pressed }) => [{ opacity: pressed ? 0.75 : 1, flexGrow: 0, flexShrink: 1, flexBasis: suggestionsGrid ? '47%' : '100%', width: suggestionsGrid ? '47%' : '100%', minWidth: 0 }]}>
+          {suggestions.map((item, i) => <Pressable key={item.title} onPress={() => selectSuggestion(item.prompt)} style={({ pressed }) => [{ opacity: pressed ? 0.75 : 1, flexGrow: 0, flexShrink: 1, flexBasis: suggestionsGrid ? '47%' : '100%', width: suggestionsGrid ? '47%' : '100%', minWidth: 0 }]}>
             <Card style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 12, paddingHorizontal: 12, minHeight: wideLayout ? 84 : 68 }}>
               <View style={{ width: wideLayout ? 42 : 40, height: wideLayout ? 42 : 40, borderRadius: 14, backgroundColor: [C.primarySoft, C.blue, C.mint][i], alignItems: 'center', justifyContent: 'center' }}>
                 <Text style={{ color: [C.primary, '#2865A8', C.green][i], fontSize: wideLayout ? 22 : 21, fontWeight: '700' }}>{item.icon}</Text>
