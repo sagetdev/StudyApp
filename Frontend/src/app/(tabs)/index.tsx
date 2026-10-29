@@ -25,8 +25,7 @@ export default function HomeScreen() {
   const extraWideLayout = screenWidth >= 1400;
   const suggestionsGrid = screenWidth >= 1050;
   const { session } = useAuth();
-  const pageScrollRef = useRef<ScrollView | null>(null);
-  const courseFormRef = useRef<View | null>(null);
+  const pageScrollRef = useRef<React.ComponentRef<typeof ScrollView> | null>(null);
   const [course, setCourse] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -34,16 +33,8 @@ export default function HomeScreen() {
   const selectSuggestion = (prompt: string) => {
     setCourse(prompt);
     setError('');
-    // Amène le formulaire dans la zone visible avec un défilement animé.
-    const scrollView = pageScrollRef.current;
-    const form = courseFormRef.current;
-    if (scrollView && form) {
-      form.measureLayout(
-        scrollView,
-        (_x, y) => scrollView.scrollTo({ y: Math.max(0, y - 24), animated: true }),
-        () => scrollView.scrollTo({ y: 0, animated: true }),
-      );
-    }
+    // Sur mobile, le formulaire est en haut : remonte doucement pour le rendre visible.
+    pageScrollRef.current?.scrollTo({ y: 0, animated: true });
   };
 
   const createPack = async (text = course) => {
@@ -80,7 +71,7 @@ export default function HomeScreen() {
     </View>
 
     <View style={{ flexDirection: wideLayout ? 'row' : 'column', alignItems: 'stretch', gap: 20 }}>
-      <View ref={courseFormRef} collapsable={false} style={{ flex: wideLayout ? (extraWideLayout ? 1 : 0.95) : undefined, minWidth: 0, gap: 12 }}>
+      <View style={{ flex: wideLayout ? (extraWideLayout ? 1 : 0.95) : undefined, minWidth: 0, gap: 12 }}>
         <Heading eyebrow="Commencer" title="Crée ton pack de révision" subtitle="Saisis un thème ou colle tes notes. Tu peux aussi inclure des URL directes d’images de référence déjà existantes dans ton contenu : elles seront affichées dans les pages si elles sont fournies et exploitables. Chaque pack est enregistré dans ton compte." />
         <Card>
           <Field label="Ton cours ou ton sujet" value={course} onChangeText={setCourse} placeholder={"Ex. : la photosynthèse, chapitre 4…\n\nColle ici tes notes et, si tu en as, les URL d’images de référence existantes avec leur source."} multiline numberOfLines={7} />
