@@ -89,7 +89,7 @@ export function Page({ children, scroll = true, style, showBack, scrollRef }: Re
   scroll?: boolean;
   style?: ViewStyle;
   showBack?: boolean;
-  scrollRef?: React.Ref<ScrollView>;
+  scrollRef?: React.Ref<React.ComponentRef<typeof ScrollView>>;
 }>) {
   useThemeMode();
   const { width: screenWidth } = useWindowDimensions();
