@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { router, useSegments, type Href } from 'expo-router';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type TextInputProps, type ViewStyle } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -36,10 +37,67 @@ export function useThemeMode() {
   return { mode, setMode: updateThemeMode };
 }
 
-export function Page({ children, scroll = true, style }: React.PropsWithChildren<{ scroll?: boolean; style?: ViewStyle }>) {
+/**
+ * Flèche de retour réutilisable sur les écrans de l'application.
+ * Revient à l'écran précédent et utilise une destination de secours si l'écran
+ * a été ouvert directement (lien profond, rafraîchissement du navigateur, etc.).
+ */
+export function BackArrow({ fallbackHref, label = 'Retour à la page précédente' }: {
+  fallbackHref?: Href;
+  label?: string;
+}) {
   useThemeMode();
-  if (!scroll) return <View style={[styles.page, { backgroundColor: C.bg }, style]}>{children}</View>;
-  return <ScrollView style={[styles.scroll, { backgroundColor: C.bg }]} contentContainerStyle={[styles.page, { backgroundColor: C.bg }, style]} keyboardShouldPersistTaps="handled">{children}</ScrollView>;
+  const segments = useSegments();
+  const route = String(segments[0] ?? '');
+  const defaultFallback: Href =
+    route === 'register' ? '/login'
+      : ['flashcards', 'quiz', 'glossary', 'recall', 'exam-practice', 'revision', 'tutor'].includes(route)
+        ? '/study-pack'
+        : '/(tabs)';
+
+  return <Pressable
+    accessibilityRole="button"
+    accessibilityLabel={label}
+    onPress={() => {
+      if (router.canGoBack()) router.back();
+      else router.replace(fallbackHref ?? defaultFallback);
+    }}
+    hitSlop={8}
+    style={({ pressed }) => ({
+      alignSelf: 'flex-start',
+      minWidth: 44,
+      minHeight: 44,
+      paddingHorizontal: 13,
+      marginBottom: 2,
+      borderRadius: 14,
+      borderWidth: 1,
+      borderColor: C.line,
+      backgroundColor: C.surface,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 9,
+      opacity: pressed ? 0.72 : 1,
+    })}
+  >
+    <Text style={{ color: C.primary, fontSize: 23, lineHeight: 25, fontWeight: '700' }}>‹</Text>
+    <Text style={{ color: C.ink, fontSize: 12, fontWeight: '700' }}>Retour</Text>
+  </Pressable>;
+}
+
+export function Page({ children, scroll = true, style, showBack }: React.PropsWithChildren<{
+  scroll?: boolean;
+  style?: ViewStyle;
+  showBack?: boolean;
+}>) {
+  useThemeMode();
+  const segments = useSegments();
+  const route = String(segments[0] ?? '');
+  // Les onglets ont déjà leur navigation; l'écran de connexion est la racine d'auth.
+  const shouldShowBack = showBack ?? (route !== '(tabs)' && route !== 'login' && route !== 'index');
+  const content = <>{shouldShowBack ? <BackArrow /> : null}{children}</>;
+  if (!scroll) return <View style={[styles.page, { backgroundColor: C.bg }, style]}>{content}</View>;
+  return <ScrollView style={[styles.scroll, { backgroundColor: C.bg }]} contentContainerStyle={[styles.page, { backgroundColor: C.bg }, style]} keyboardShouldPersistTaps="handled">{content}</ScrollView>;
 }
 
 export function Heading({ title, subtitle, eyebrow }: { title: string; subtitle?: string; eyebrow?: string }) {
