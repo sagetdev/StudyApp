@@ -32,6 +32,8 @@ export function useThemeMode() {
   useEffect(() => {
     const listener = (next: ThemeMode) => setMode(next);
     themeListeners.add(listener);
+    // Synchronise aussi les composants montés pendant le chargement du thème sauvegardé.
+    listener(activeTheme);
     return () => { themeListeners.delete(listener); };
   }, []);
   return { mode, setMode: updateThemeMode };
