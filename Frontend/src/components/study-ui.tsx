@@ -1,40 +1,56 @@
 import React, { useEffect, useState } from 'react';
 import { router, useSegments, type Href } from 'expo-router';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions, type TextInputProps, type ViewStyle } from 'react-native';
+import { ActivityIndicator, Appearance, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions, type TextInputProps, type ViewStyle } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type ThemeMode = 'light' | 'dark';
+type ThemePreference = ThemeMode | 'system';
 const THEME_KEY = 'studyapp:theme-mode:v1';
 const palettes = {
   light: { bg: '#F6F7FB', surface: '#FFFFFF', ink: '#171A29', muted: '#6E758A', line: '#E8EAF2', primary: '#614AE8', primarySoft: '#E8E0FF', mint: '#D6F5E5', green: '#1F9463', blue: '#D1E8FF', amber: '#FFE8BA', danger: '#C64052', dangerSoft: '#FCE8EC' },
   dark: { bg: '#11131C', surface: '#1C2030', ink: '#F2F3FA', muted: '#A5ABC0', line: '#34394D', primary: '#A99AFF', primarySoft: '#302A4D', mint: '#1E3B32', green: '#69D6A2', blue: '#203B56', amber: '#49391E', danger: '#FF8796', dangerSoft: '#482831' },
 };
 export const C: { [K in keyof typeof palettes.light]: string } = { ...palettes.light };
-let activeTheme: ThemeMode = 'light';
-const themeListeners = new Set<(mode: ThemeMode) => void>();
+let activeTheme: ThemeMode = Appearance.getColorScheme() === 'dark' ? 'dark' : 'light';
+let themePreference: ThemePreference = 'system';
+const themeListeners = new Set<(mode: ThemePreference) => void>();
 function applyTheme(mode: ThemeMode) {
   activeTheme = mode;
   Object.assign(C, palettes[mode]);
-  themeListeners.forEach((listener) => listener(mode));
+}
+function notifyThemePreference() {
+  themeListeners.forEach((listener) => listener(themePreference));
 }
 export async function initializeThemeMode() {
   try {
     const saved = await AsyncStorage.getItem(THEME_KEY);
-    if (saved === 'light' || saved === 'dark') applyTheme(saved);
-  } catch { /* Le thème clair reste le choix par défaut si le stockage est indisponible. */ }
+    themePreference = saved === 'light' || saved === 'dark' || saved === 'system' ? saved : 'system';
+  } catch { themePreference = 'system'; }
+  applyTheme(themePreference === 'system' ? (Appearance.getColorScheme() === 'dark' ? 'dark' : 'light') : themePreference);
+  notifyThemePreference();
 }
-export async function updateThemeMode(mode: ThemeMode) {
-  applyTheme(mode);
+export async function updateThemeMode(mode: ThemePreference) {
+  themePreference = mode;
+  applyTheme(mode === 'system' ? (Appearance.getColorScheme() === 'dark' ? 'dark' : 'light') : mode);
+  notifyThemePreference();
   try { await AsyncStorage.setItem(THEME_KEY, mode); } catch { /* Le thème reste actif pour cette session. */ }
 }
 export function useThemeMode() {
-  const [mode, setMode] = useState<ThemeMode>(activeTheme);
+  const [mode, setMode] = useState<ThemePreference>(themePreference);
   useEffect(() => {
-    const listener = (next: ThemeMode) => setMode(next);
+    const listener = (next: ThemePreference) => setMode(next);
     themeListeners.add(listener);
-    // Synchronise aussi les composants montés pendant le chargement du thème sauvegardé.
-    listener(activeTheme);
-    return () => { themeListeners.delete(listener); };
+    listener(themePreference);
+    const appearanceSubscription = Appearance.addChangeListener(({ colorScheme }) => {
+      if (themePreference === 'system') {
+        applyTheme(colorScheme === 'dark' ? 'dark' : 'light');
+        notifyThemePreference();
+      }
+    });
+    return () => {
+      themeListeners.delete(listener);
+      appearanceSubscription.remove();
+    };
   }, []);
   return { mode, setMode: updateThemeMode };
 }
