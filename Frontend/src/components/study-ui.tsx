@@ -13,46 +13,45 @@ const palettes = {
 export const C: { [K in keyof typeof palettes.light]: string } = { ...palettes.light };
 let activeTheme: ThemeMode = Appearance.getColorScheme() === 'dark' ? 'dark' : 'light';
 let themePreference: ThemePreference = 'system';
-const themeListeners = new Set<(mode: ThemePreference) => void>();
+const themeListeners = new Set<() => void>();
 function applyTheme(mode: ThemeMode) {
   activeTheme = mode;
   Object.assign(C, palettes[mode]);
 }
-function notifyThemePreference() {
-  themeListeners.forEach((listener) => listener(themePreference));
+function notifyThemeChange() {
+  // Chaque abonné est notifié même si la préférence reste "system" :
+  // seul le thème effectif (clair/sombre) a changé.
+  themeListeners.forEach((listener) => listener());
 }
+Appearance.addChangeListener(({ colorScheme }) => {
+  if (themePreference === 'system') {
+    applyTheme(colorScheme === 'dark' ? 'dark' : 'light');
+    notifyThemeChange();
+  }
+});
 export async function initializeThemeMode() {
   try {
     const saved = await AsyncStorage.getItem(THEME_KEY);
     themePreference = saved === 'light' || saved === 'dark' || saved === 'system' ? saved : 'system';
   } catch { themePreference = 'system'; }
   applyTheme(themePreference === 'system' ? (Appearance.getColorScheme() === 'dark' ? 'dark' : 'light') : themePreference);
-  notifyThemePreference();
+  notifyThemeChange();
 }
 export async function updateThemeMode(mode: ThemePreference) {
   themePreference = mode;
   applyTheme(mode === 'system' ? (Appearance.getColorScheme() === 'dark' ? 'dark' : 'light') : mode);
-  notifyThemePreference();
+  notifyThemeChange();
   try { await AsyncStorage.setItem(THEME_KEY, mode); } catch { /* Le thème reste actif pour cette session. */ }
 }
 export function useThemeMode() {
-  const [mode, setMode] = useState<ThemePreference>(themePreference);
+  const [snapshot, setSnapshot] = useState(() => ({ mode: themePreference, revision: 0 }));
   useEffect(() => {
-    const listener = (next: ThemePreference) => setMode(next);
+    const listener = () => setSnapshot((current) => ({ mode: themePreference, revision: current.revision + 1 }));
     themeListeners.add(listener);
-    listener(themePreference);
-    const appearanceSubscription = Appearance.addChangeListener(({ colorScheme }) => {
-      if (themePreference === 'system') {
-        applyTheme(colorScheme === 'dark' ? 'dark' : 'light');
-        notifyThemePreference();
-      }
-    });
-    return () => {
-      themeListeners.delete(listener);
-      appearanceSubscription.remove();
-    };
+    listener();
+    return () => { themeListeners.delete(listener); };
   }, []);
-  return { mode, setMode: updateThemeMode };
+  return { mode: snapshot.mode, setMode: updateThemeMode };
 }
 
 /**
