@@ -4,18 +4,17 @@ import { Pressable, Text, View } from 'react-native';
 import { Button, C, Card, Heading, Page, Pill, useThemeMode } from '@/components/study-ui';
 import { useAuth } from '@/lib/auth-context';
 
-const shortcuts = [
-  { title: 'Mes cours', subtitle: 'Retrouver les packs enregistrés', route: '/library', icon: '▤', tone: C.primarySoft },
-  { title: 'Mes notes', subtitle: 'Capturer les notions importantes', route: '/notes', icon: '✎', tone: C.primarySoft },
-  { title: 'Ma progression', subtitle: 'Suivre tes sessions et tes scores', route: '/progress', icon: '↗', tone: C.mint },
-  { title: 'Classement', subtitle: 'Découvrir les défis à venir', route: '/ranking', icon: '♛', tone: C.amber },
-  { title: 'Paramètres', subtitle: 'Personnaliser ton expérience', route: '/settings', icon: '⚙', tone: C.blue },
-] as const;
-
 export default function ProfileScreen() {
   useThemeMode();
   const { session, signOut } = useAuth();
   const [busy, setBusy] = useState(false);
+  const shortcuts = [
+    { title: 'Mes cours', subtitle: 'Retrouver les packs enregistrés', route: '/library', icon: '▤', tone: C.primarySoft },
+    { title: 'Mes notes', subtitle: 'Capturer les notions importantes', route: '/notes', icon: '✎', tone: C.primarySoft },
+    { title: 'Ma progression', subtitle: 'Suivre tes sessions et tes scores', route: '/progress', icon: '↗', tone: C.mint },
+    { title: 'Classement', subtitle: 'Découvrir les défis à venir', route: '/ranking', icon: '♛', tone: C.amber },
+    { title: 'Paramètres', subtitle: 'Personnaliser ton expérience', route: '/settings', icon: '⚙', tone: C.blue },
+  ] as const;
   const logout = async () => { setBusy(true); try { await signOut(); router.replace('/login'); } finally { setBusy(false); } };
   return <Page>
     <Heading eyebrow="Compte" title="Ton profil" subtitle="Gère ta session et accède à tes outils personnels." />
