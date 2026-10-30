@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Switch, Text, View } from 'react-native';
+import { Pressable, Switch, Text, View } from 'react-native';
 import { router } from 'expo-router';
-import { Button, C, Card, Heading, Page, Pill, useThemeMode } from '@/components/study-ui';
+import { Button, C, Card, Heading, Page, Pill, useThemeMode, type ThemePreference } from '@/components/study-ui';
 import { useAuth } from '@/lib/auth-context';
 
 function Preference({ title, subtitle, value, onChange }: { title: string; subtitle: string; value: boolean; onChange: (value: boolean) => void }) {
@@ -27,7 +27,16 @@ export default function SettingsScreen() {
     <Heading eyebrow="Personnalisation" title="Paramètres" subtitle="Configure ton expérience StudyApp." />
     <Card>
       <Text style={{ color: C.primary, fontSize: 11, fontWeight: '800', letterSpacing: 1 }}>APPARENCE</Text>
-      <Preference title="Mode sombre" subtitle={mode === 'dark' ? 'Un thème sombre, confortable en faible luminosité.' : 'Un thème clair, net et lumineux.'} value={mode === 'dark'} onChange={(enabled) => { void setMode(enabled ? 'dark' : 'light'); }} />
+      <Text style={{ color: C.muted, fontSize: 12, lineHeight: 19 }}>Choisis l’apparence de l’application. En mode automatique, StudyApp suit le thème de ton appareil.</Text>
+      <View style={{ gap: 10 }}>
+        {([{ value: 'system', title: 'Automatique', subtitle: 'Suit les réglages de ton appareil.' }, { value: 'light', title: 'Clair', subtitle: 'Toujours utiliser le thème clair.' }, { value: 'dark', title: 'Sombre', subtitle: 'Toujours utiliser le thème sombre.' }] as { value: ThemePreference; title: string; subtitle: string }[]).map((option) => {
+          const selected = mode === option.value;
+          return <Pressable key={option.value} accessibilityRole="radio" accessibilityState={{ checked: selected }} onPress={() => { void setMode(option.value); }} style={{ flexDirection: 'row', alignItems: 'center', gap: 12, padding: 13, borderRadius: 14, borderWidth: 1, borderColor: selected ? C.primary : C.line, backgroundColor: selected ? C.primarySoft : C.surface }}>
+            <View style={{ width: 20, height: 20, borderRadius: 10, borderWidth: 2, borderColor: selected ? C.primary : C.muted, alignItems: 'center', justifyContent: 'center' }}>{selected ? <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: C.primary }} /> : null}</View>
+            <View style={{ flex: 1, gap: 3 }}><Text style={{ color: C.ink, fontSize: 14, fontWeight: '700' }}>{option.title}</Text><Text style={{ color: C.muted, fontSize: 12 }}>{option.subtitle}</Text></View>
+          </Pressable>;
+        })}
+      </View>
       <Text style={{ color: C.muted, fontSize: 11 }}>Ton choix est conservé sur cet appareil.</Text>
     </Card>
     <Card>
