@@ -125,10 +125,10 @@ export function Button({ title, onPress, variant = 'primary', loading = false, d
   useThemeMode();
   return <Pressable accessibilityRole="button" onPress={onPress} disabled={disabled || loading} style={({ pressed }) => [
     styles.button,
-    variant === 'primary' ? { backgroundColor: '#614AE8' } : variant === 'secondary' ? { backgroundColor: C.primarySoft } : { backgroundColor: 'transparent' },
+    variant === 'primary' ? { backgroundColor: C.primary } : variant === 'secondary' ? { backgroundColor: C.primarySoft } : { backgroundColor: 'transparent' },
     (pressed || disabled || loading) && { opacity: 0.72 },
   ]}>
-    {loading ? <ActivityIndicator color={variant === 'primary' ? '#FFFFFF' : C.primary} /> : <Text style={[styles.buttonText, variant !== 'primary' && { color: C.primary }]}>{title}</Text>}
+    {loading ? <ActivityIndicator color={variant === 'primary' ? (activeTheme === 'dark' ? '#17131F' : '#FFFFFF') : C.primary} /> : <Text style={[styles.buttonText, variant !== 'primary' && { color: C.primary }, variant === 'primary' && activeTheme === 'dark' && { color: '#17131F' }]}>{title}</Text>}
   </Pressable>;
 }
 
@@ -152,12 +152,13 @@ export function SectionTitle({ title, action }: { title: string; action?: string
   return <View style={styles.sectionTitle}><Text style={[styles.sectionText, { color: C.ink }]}>{title}</Text>{action ? <Text style={[styles.sectionAction, { color: C.primary }]}>{action}</Text> : null}</View>;
 }
 
-export const uiStyles = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  spread: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
-  body: { color: C.muted, fontSize: 14, lineHeight: 21 },
-  strong: { color: C.ink, fontSize: 15, fontWeight: '700' },
-});
+export const uiStyles = {
+  row: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: 12 },
+  spread: { flexDirection: 'row' as const, alignItems: 'center' as const, justifyContent: 'space-between' as const, gap: 12 },
+  // Getters: les couleurs sont lues au rendu, pas figées au chargement du module.
+  get body() { return { color: C.muted, fontSize: 14, lineHeight: 21 }; },
+  get strong() { return { color: C.ink, fontSize: 15, fontWeight: '700' as const }; },
+};
 
 const styles = StyleSheet.create({
   scroll: { flex: 1 },
