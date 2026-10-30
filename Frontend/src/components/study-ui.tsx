@@ -4,7 +4,7 @@ import { ActivityIndicator, Appearance, Pressable, ScrollView, StyleSheet, Text,
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type ThemeMode = 'light' | 'dark';
-type ThemePreference = ThemeMode | 'system';
+export type ThemePreference = ThemeMode | 'system';
 const THEME_KEY = 'studyapp:theme-mode:v1';
 const palettes = {
   light: { bg: '#F6F7FB', surface: '#FFFFFF', ink: '#171A29', muted: '#6E758A', line: '#E8EAF2', primary: '#614AE8', primarySoft: '#E8E0FF', mint: '#D6F5E5', green: '#1F9463', blue: '#D1E8FF', amber: '#FFE8BA', danger: '#C64052', dangerSoft: '#FCE8EC' },
